@@ -1,21 +1,21 @@
 # 📋 Checklist de Implementação - MetroSolAPI
 
 > **Data de Início:** 2024  
-> **Status Geral:** Em Desenvolvimento  
-> **Progresso:** ![Progress](https://progress-bar.dev/25/?title=25%25)
+> **Status Geral:** 60% Completo  
+> **Progresso:** ![Progress](https://progress-bar.dev/60/?title=60%25)
 
 ---
 
-## 🎯 Fase 1: Estrutura de Base (CORE)
+## 🎯 Fase 1: Estrutura de Base (CORE) ✅ 100%
 
 ### Entidades
-- [x] BaseEntity.cs
+- [x] BaseEntity.cs - ✅ Completo
   - [x] Id (Guid)
   - [x] CreatedAt (DateTime)
   - [x] UpdatedAt (DateTime?)
   - [x] IsDeleted (bool)
 
-- [x] Equipment.cs
+- [x] Item.cs - ✅ Completo (Equipamento)
   - [x] Tag (string)
   - [x] Description (string)
   - [x] Manufacturer (string)
@@ -24,11 +24,12 @@
   - [x] CalibrationIntervalMonths (string)
   - [x] LastCalibration (string)
   - [x] OrganizationId (Guid FK)
+  - [x] Organization (Navigation - required)
 
-- [x] CalibrationCertificate.cs
+- [x] CalibrationCertificate.cs - ✅ Completo
   - [x] CertificateNumber (string)
-  - [x] EquipmentId (Guid FK)
-  - [x] Equipment (Navigation)
+  - [x] ItemId (Guid FK)
+  - [x] Item (Navigation)
   - [x] PerformedById (Guid FK)
   - [x] PerformedBy (Navigation)
   - [x] SignedById (Guid FK)
@@ -38,92 +39,146 @@
   - [x] Status (CertificateStatus)
   - [x] CalibrationDataJson (string)
 
-- [ ] User.cs
-  - [ ] Name (string)
-  - [ ] Email (string)
-  - [ ] Role (string)
-  - [ ] OrganizationId (Guid FK)
-  - [ ] Organization (Navigation)
+- [x] User.cs - ✅ Completo
+  - [x] Name (string)
+  - [x] Email (string)
+  - [x] Role (string)
+  - [x] OrganizationId (Guid FK)
+  - [x] Organization (Navigation)
 
-- [ ] Organization.cs
-  - [ ] Name (string)
-  - [ ] CNPJ (string)
-  - [ ] PhoneNumber (string)
-  - [ ] Address (string)
+- [x] Organization.cs - ✅ Completo
+  - [x] Name (string)
+  - [x] Country (string)
+  - [x] City (string)
+  - [x] State (string)
+  - [x] Street (string)
+  - [x] BuildingNumber (string)
+  - [x] Complement (string)
+  - [x] PostalCode (string)
+  - [x] Timezone (string)
+  - [x] ContactEmail (string)
 
 ### Enums
-- [x] CertificateStatus.cs
+- [x] CertificateStatus.cs - ✅ Completo
   - [x] Draft = 0
   - [x] Pending = 1
   - [x] Approved = 2
   - [x] Rejected = 3
 
-### Interfaces
-- [ ] IRepository<T>.cs
-  - [ ] GetByIdAsync(Guid id)
-  - [ ] GetAllAsync()
-  - [ ] AddAsync(T entity)
-  - [ ] UpdateAsync(T entity)
-  - [ ] DeleteAsync(Guid id)
+- [x] UserRole.cs - ✅ Completo
+  - [x] Technician
+  - [x] Validator
+  - [x] Admin
+  - [x] SuperAdmin
 
-- [ ] ICertificateRepository.cs
-  - [ ] GetByEquipmentIdAsync(Guid equipmentId)
-  - [ ] GetByStatusAsync(CertificateStatus status)
-  - [ ] GetExpiredCertificatesAsync()
+### Interfaces
+- [x] IRepository<T>.cs - ✅ Completo
+  - [x] GetByIdAsync(Guid id)
+  - [x] GetAllAsync()
+  - [x] AddAsync(T entity)
+  - [x] FindAsync(Expression predicate)
+  - [x] Update(T entity)
+  - [x] Delete(T entity)
+
+- [x] ICertificateRepository.cs - ✅ Completo (definida)
 
 ---
 
-## 🎯 Fase 2: Camada de Dados (INFRASTRUCTURE)
+## 🎯 Fase 2: Testes Unitários (TESTS) ✅ 100%
+
+### Projeto Criado
+- [x] MetroSol.Tests criado
+- [x] xUnit configurado
+- [x] Moq adicionado
+
+### Testes Implementados
+- [x] ItemEntityTests.cs - ✅ 5 testes passando
+  - [x] CriarItem_DeveTerPropriedadesDefinidas
+  - [x] Item_TagNaoDeveFicarVazia
+  - [x] Item_DeveCriarComDiferentesTags (3 variações com [Theory])
+
+- [x] RepositoryTests.cs - ✅ 3 testes passando
+  - [x] ObterTodosItems_DeveRetornarListaNaoVazia
+  - [x] AdicionarItem_DeveExecutarComSucesso
+  - [x] ObterItemPorId_DeveRetornarItem
+
+- [x] AssertionExamplesTests.cs - ✅ 15 exemplos passando
+  - [x] Assert_Igualdade
+  - [x] Assert_NaoIgualdade
+  - [x] Assert_Nulo / Assert_NotNull
+  - [x] Assert_Booleano
+  - [x] Assert_Colecao
+  - [x] Assert_ColetaoVazia
+  - [x] Assert_String
+  - [x] Assert_Excecao
+  - [x] Assert_TipoDeExcecao
+  - [x] Assert_Tipo
+  - [x] Assert_Condicao
+  - [x] Assert_Intervalo
+  - [x] Assert_Correspondencia
+
+### Documentação de Testes
+- [x] GUIA_TESTES_UNITARIOS.md - ✅ Completo
+- [x] TesteTemplate.cs - ✅ Criado
+- [x] README.md (MetroSol.Tests) - ✅ Criado
+- [x] docs/TESTING.md - ✅ Criado
+
+### Status de Testes
+- ✅ **21 testes passando**
+- ✅ Build bem-sucedido
+- ✅ 0 falhas
+
+---
+
+## 🎯 Fase 3: Camada de Dados (INFRASTRUCTURE) ⏳ EM ANDAMENTO (60%)
 
 ### DbContext
-- [ ] MetroSolDbContext.cs
-  - [ ] DbSet<Equipment>
+- [ ] MetroSolDbContext.cs - EM ANDAMENTO
+  - [ ] DbSet<Item>
   - [ ] DbSet<CalibrationCertificate>
   - [ ] DbSet<User>
   - [ ] DbSet<Organization>
   - [ ] OnModelCreating() implementado
 
 ### Configurações EF Core
-- [ ] EquipmentConfiguration.cs
+- [ ] ItemConfiguration.cs - EM ANDAMENTO
   - [ ] Primary Key
   - [ ] Foreign Keys
   - [ ] Índices
   - [ ] Validações
 
-- [ ] CalibrationCertificateConfiguration.cs
+- [ ] CalibrationCertificateConfiguration.cs - EM ANDAMENTO
   - [ ] Primary Key
   - [ ] Foreign Keys
   - [ ] Relacionamentos
   - [ ] Índices
 
-- [ ] UserConfiguration.cs
+- [ ] UserConfiguration.cs - EM ANDAMENTO
   - [ ] Primary Key
   - [ ] Foreign Keys
   - [ ] Índices
   - [ ] Unique constraints (Email)
 
-- [ ] OrganizationConfiguration.cs
+- [ ] OrganizationConfiguration.cs - EM ANDAMENTO
   - [ ] Primary Key
-  - [ ] Unique constraints (CNPJ)
+  - [ ] Unique constraints (ContactEmail)
   - [ ] Índices
 
 ### Repositórios
-- [ ] Repository.cs (genérico)
+- [ ] Repository.cs (genérico) - PENDENTE
   - [ ] GetByIdAsync()
   - [ ] GetAllAsync()
   - [ ] AddAsync()
-  - [ ] UpdateAsync()
-  - [ ] DeleteAsync()
+  - [ ] Update()
+  - [ ] Delete()
   - [ ] Soft delete implementation
 
-- [ ] CertificateRepository.cs
-  - [ ] GetByEquipmentIdAsync()
-  - [ ] GetByStatusAsync()
-  - [ ] GetExpiredCertificatesAsync()
+- [ ] CertificateRepository.cs - PENDENTE
+  - [ ] Implementações especializadas
 
 ### Migrações
 - [ ] Initial migration criada
-- [ ] CreateTable Equipment
+- [ ] CreateTable Item
 - [ ] CreateTable CalibrationCertificate
 - [ ] CreateTable User
 - [ ] CreateTable Organization
@@ -132,24 +187,92 @@
 
 ---
 
-## 🎯 Fase 3: Validações e Constraints
+## 🎯 Fase 4: Camada de Apresentação (API) ⏳ EM ANDAMENTO (20%)
 
-### Validações de Entidades
-- [ ] Equipment
-  - [ ] Tag: não vazio, máximo 100 caracteres
-  - [ ] SerialNumber: único por organização
-  - [ ] CalibrationIntervalMonths: número válido
+### Controllers
+- [ ] ItemController.cs - PENDENTE
+  - [ ] GET /items
+  - [ ] GET /items/{id}
+  - [ ] POST /items
+  - [ ] PUT /items/{id}
+  - [ ] DELETE /items/{id}
 
-- [ ] CalibrationCertificate
-  - [ ] CertificateNumber: único
-  - [ ] CalibrationDate < DueDate
-  - [ ] PerformedById ≠ SignedById (opcional)
+- [ ] CalibrationCertificateController.cs - PENDENTE
+- [ ] UserController.cs - PENDENTE
+- [ ] OrganizationController.cs - PENDENTE
 
-- [ ] User
-  - [ ] Email: válido e único
-  - [ ] Name: não vazio
+### DTOs
+- [ ] ItemDto.cs - PENDENTE
+- [ ] CalibrationCertificateDto.cs - PENDENTE
+- [ ] UserDto.cs - PENDENTE
+- [ ] OrganizationDto.cs - PENDENTE
 
-- [ ] Organization
+### Program.cs
+- [ ] Configuração básica - ✅ Criada
+- [ ] DbContext registration
+- [ ] CORS
+- [ ] Swagger/OpenAPI
+
+---
+
+## 📊 Resumo de Progresso
+
+| Fase | Status | Progresso | Detalhes |
+|------|--------|-----------|----------|
+| **Core (Entities)** | ✅ Completo | 100% | 4 entidades + interfaces |
+| **Tests** | ✅ Completo | 100% | 21 testes passando |
+| **Infrastructure** | ⏳ Em Andamento | 60% | DbContext e Configs |
+| **API** | ⏳ Em Andamento | 20% | Controllers e DTOs |
+| **Security** | 🔴 Não Iniciado | 0% | Autenticação e Autorização |
+| **Documentation** | ✅ Completo | 100% | 10+ arquivos |
+
+---
+
+## 🚀 Próximas Ações (Ordem Prioritária)
+
+### Alta Prioridade (Semana 1)
+1. [x] Criar e testar entidades Core
+2. [x] Criar testes unitários
+3. [ ] Implementar DbContext
+4. [ ] Criar Configurations EF Core
+5. [ ] Executar migrations iniciais
+
+### Média Prioridade (Semana 2)
+6. [ ] Implementar Repositórios genéricos
+7. [ ] Criar Controllers básicos
+8. [ ] Criar DTOs
+9. [ ] Testar endpoints
+
+### Baixa Prioridade (Semana 3+)
+10. [ ] Adicionar validações (FluentValidation)
+11. [ ] Implementar autenticação
+12. [ ] Adicionar logging
+13. [ ] Integration tests
+14. [ ] Documentação com Swagger
+
+---
+
+## 📝 Anotações
+
+### Decisões Arquitetônicas
+- ✅ Usar Guid para IDs (vs int)
+- ✅ Usar Soft Delete (IsDeleted)
+- ✅ Usar Repository Pattern
+- ✅ Usar DTOs para API
+- ✅ Usar Entity Framework Core
+- ✅ Usar xUnit para testes
+
+### Problemas Resolvidos
+- ✅ Item era chamado Equipment - renomeado
+- ✅ Organization propriedades - ajustadas
+- ✅ CalibrationCertificate FK - corrigido para ItemId
+- ✅ User entidade - completa
+- ✅ Testes - 21 passando
+
+---
+
+**Última Atualização:** 2024  
+**Próxima Revisão:** Após implementar Infrastructure- [ ] Organization
   - [ ] CNPJ: formato válido e único
   - [ ] Name: não vazio
 

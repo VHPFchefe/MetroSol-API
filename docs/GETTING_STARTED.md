@@ -32,12 +32,24 @@ Edite `appsettings.json` em `MetroSol.API`:
 dotnet ef database update -p MetroSol.Infrastructure -s MetroSol.API
 ```
 
-### 5. Rode a aplicação
+### 5️⃣ 🆕 Rode os testes
+```bash
+# Via terminal
+cd MetroSol.Tests
+dotnet test
+
+# Via Visual Studio
+# Ctrl+E, T (abrir Test Explorer)
+# Clique em "Run All"
+```
+
+### 6. Rode a aplicação
 ```bash
 dotnet run -p MetroSol.API
 ```
 
-✅ **Pronto!** A API está rodando em `https://localhost:5001`
+✅ **Pronto!** A API está rodando em `https://localhost:5001`  
+✅ **Testes:** 21 testes passando em `MetroSol.Tests`
 
 ---
 
@@ -47,7 +59,60 @@ dotnet run -p MetroSol.API
 |---|-----------|-------|---------|
 | 1 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 15 min | Entender estrutura |
 | 2 | [DIAGRAMS.md](./DIAGRAMS.md) | 10 min | Visualizar entidades |
-| 3 | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | 10 min | Padrões de código |
+| 3 | [TESTING.md](./TESTING.md) | 15 min | 🆕 Entender testes (21 testes passando!) |
+| 4 | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | 10 min | Padrões de código |
+| 5 | [MetroSol.Tests/GUIA_TESTES_UNITARIOS.md](../MetroSol.Tests/GUIA_TESTES_UNITARIOS.md) | 30 min | Guia completo de testes em português |
+
+---
+
+## 🧪 Primeiro Teste?
+
+Rode os testes existentes:
+
+```powershell
+# Via terminal
+cd C:\Users\vinic\source\repos\MetroSol.Tests
+dotnet test
+
+# Você deve ver:
+# ✅ 21 testes passando
+# ✅ 0 falhados
+# ✅ Tempo: ~2.8s
+```
+
+**Depois de rodar:** Veja [TESTING.md](./TESTING.md) para entender cada teste! 📖
+
+---
+
+## 🎯 Estrutura da Solução
+
+```
+MetroSolAPI/
+├── MetroSol.Core/           ✅ 100% - Entidades e interfaces
+├── MetroSol.Infrastructure/ ⏳ 60% - DbContext e Repositories (EM ANDAMENTO)
+├── MetroSol.API/            ⏳ 20% - Controllers e DTOs (PENDENTE)
+└── MetroSol.Tests/          ✅ 100% - 21 Testes Unitários
+```
+
+---
+
+## 🚀 Próximos Passos
+
+1. ✅ Você criou um clone funcional
+2. ✅ Testes estão rodando
+3. ⏳ Leia ARCHITECTURE.md para entender design
+4. ⏳ Implemente DbContext (Infrastructure)
+5. ⏳ Crie Controllers (API)
+
+---
+
+## 🔗 Links Rápidos
+
+- 📖 [ARCHITECTURE.md](./ARCHITECTURE.md) - Entenda a estrutura
+- 🧪 [TESTING.md](./TESTING.md) - Testes unitários
+- ⚡ [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Referência rápida
+- 📊 [DIAGRAMS.md](./DIAGRAMS.md) - Diagramas de entidades
+- ✅ [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) - O que fazer
 
 ---
 

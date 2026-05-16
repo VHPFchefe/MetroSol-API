@@ -47,12 +47,13 @@ MetroSolAPI/
 MetroSol.Core/
 ├── Entities/
 │   ├── BaseEntity.cs
-│   ├── Equipment.cs
+│   ├── Item.cs                      # ✅ Equipamento (antes Equipment)
 │   ├── CalibrationCertificate.cs
 │   ├── User.cs
 │   └── Organization.cs
 ├── Enums/
-│   └── CertificateStatus.cs
+│   ├── CertificateStatus.cs
+│   └── UserRole.cs
 ├── Interfaces/
 │   ├── IRepository.cs
 │   └── ICertificateRepository.cs
@@ -75,7 +76,7 @@ MetroSol.Infrastructure/
 ├── Data/
 │   ├── MetroSolDbContext.cs
 │   ├── Configurations/
-│   │   ├── EquipmentConfiguration.cs
+│   │   ├── ItemConfiguration.cs           # ✅ Equipamento
 │   │   ├── CalibrationCertificateConfiguration.cs
 │   │   ├── UserConfiguration.cs
 │   │   └── OrganizationConfiguration.cs
@@ -100,11 +101,11 @@ MetroSol.Infrastructure/
 ```
 MetroSol.API/
 ├── Controllers/
-│   ├── EquipmentController.cs
+│   ├── ItemController.cs              # ✅ Equipamento
 │   ├── CalibrationCertificateController.cs
 │   └── ...
 ├── DTOs/
-│   ├── EquipmentDto.cs
+│   ├── ItemDto.cs                     # ✅ Equipamento
 │   ├── CalibrationCertificateDto.cs
 │   └── ...
 ├── Program.cs
@@ -142,14 +143,14 @@ namespace MetroSol.Core.Entities
 
 ---
 
-### **Equipment** ⚙️
+### **Item** ⚙️
 
 Representa um equipamento que necessita calibração.
 
-**Arquivo:** `../MetroSol-Core/Entities/Equipment.cs`
+**Arquivo:** `../MetroSol.Core/Entities/Item.cs`
 
 ```csharp
-public class Equipment : BaseEntity
+public class Item : BaseEntity
 {
 	public string Tag { get; set; } = string.Empty;
 	public string Description { get; set; } = string.Empty;
@@ -159,6 +160,7 @@ public class Equipment : BaseEntity
 	public string CalibrationIntervalMonths { get; set; } = string.Empty;
 	public string LastCalibration { get; set; } = string.Empty;
 	public Guid OrganizationId { get; set; }
+	public required Organization Organization { get; set; }
 }
 ```
 
@@ -174,6 +176,7 @@ public class Equipment : BaseEntity
 | CalibrationIntervalMonths | string | Intervalo de calibração em meses |
 | LastCalibration | string | Data da última calibração |
 | OrganizationId | Guid | FK para Organization |
+| Organization | Organization | Navegação para Organization (required) |
 
 **Relacionamentos:**
 - `1:N` com `CalibrationCertificate` (um equipamento pode ter múltiplos certificados)
@@ -185,14 +188,14 @@ public class Equipment : BaseEntity
 
 Representa um certificado de calibração de um equipamento.
 
-**Arquivo:** `../MetroSol-Core/Entities/CalibrationCertificate.cs`
+**Arquivo:** `../MetroSol.Core/Entities/CalibrationCertificate.cs`
 
 ```csharp
 public class CalibrationCertificate : BaseEntity
 {
 	public string CertificateNumber { get; set; } = string.Empty;
-	public Guid EquipmentId { get; set; }
-	public Equipment? Equipment { get; set; }
+	public Guid ItemId { get; set; }
+	public Item? Item { get; set; }
 	public Guid PerformedById { get; set; }
 	public User? PerformedBy { get; set; }
 	public Guid SignedById { get; set; }
@@ -209,8 +212,8 @@ public class CalibrationCertificate : BaseEntity
 |-------|------|-----------|
 | Id | Guid | Identificador único (herdado) |
 | CertificateNumber | string | Número único do certificado |
-| EquipmentId | Guid | FK → Equipment |
-| Equipment | Equipment? | Navegação para Equipment |
+| ItemId | Guid | FK → Item (equipamento) |
+| Item | Item? | Navegação para Item |
 | PerformedById | Guid | FK → User (técnico) |
 | PerformedBy | User? | Navegação para User (quem realizou) |
 | SignedById | Guid | FK → User (assinante) |
@@ -232,7 +235,7 @@ public enum CertificateStatus
 ```
 
 **Relacionamentos:**
-- `N:1` com `Equipment` (muitos certificados para um equipamento)
+- `N:1` com `Item` (muitos certificados para um equipamento)
 - `N:1` com `User` (PerformedBy - técnico que realizou)
 - `N:1` com `User` (SignedBy - assinante autorizado)
 
@@ -281,15 +284,21 @@ public class User : BaseEntity
 
 Representa a organização/empresa que utiliza o sistema.
 
-**Arquivo:** `../MetroSol-Core/Entities/Organization.cs`
+**Arquivo:** `../MetroSol.Core/Entities/Organization.cs`
 
 ```csharp
 public class Organization : BaseEntity
 {
 	public string Name { get; set; } = string.Empty;
-	public string Cnpj { get; set; } = string.Empty;
-	public string PhoneNumber { get; set; } = string.Empty;
-	public string Address { get; set; } = string.Empty;
+	public string Country { get; set; } = string.Empty;
+	public string City { get; set; } = string.Empty;
+	public string State { get; set; } = string.Empty;
+	public string Street { get; set; } = string.Empty;
+	public string BuildingNumber { get; set; } = string.Empty;
+	public string Complement { get; set; } = string.Empty;
+	public string PostalCode { get; set; } = string.Empty;
+	public string Timezone { get; set; } = string.Empty;
+	public string ContactEmail { get; set; } = string.Empty;
 }
 ```
 
@@ -298,12 +307,18 @@ public class Organization : BaseEntity
 |-------|------|-----------|
 | Id | Guid | Identificador único (herdado) |
 | Name | string | Nome da organização |
-| Cnpj | string | CNPJ da empresa |
-| PhoneNumber | string | Telefone de contato |
-| Address | string | Endereço |
+| Country | string | País |
+| City | string | Cidade |
+| State | string | Estado/Província |
+| Street | string | Rua |
+| BuildingNumber | string | Número do prédio |
+| Complement | string | Complemento do endereço |
+| PostalCode | string | CEP/Código postal |
+| Timezone | string | Fuso horário |
+| ContactEmail | string | Email de contato |
 
 **Relacionamentos:**
-- `1:N` com `Equipment` (uma organização tem múltiplos equipamentos)
+- `1:N` com `Item` (uma organização tem múltiplos equipamentos)
 - `1:N` com `User` (uma organização tem múltiplos usuários)
 
 ---
@@ -316,9 +331,15 @@ public class Organization : BaseEntity
 ├──────────────────┤
 │ Id (PK)          │
 │ Name             │
-│ CNPJ             │
-│ PhoneNumber      │
-│ Address          │
+│ Country          │
+│ City             │
+│ State            │
+│ Street           │
+│ BuildingNumber   │
+│ Complement       │
+│ PostalCode       │
+│ Timezone         │
+│ ContactEmail     │
 │ CreatedAt        │
 │ UpdatedAt        │
 │ IsDeleted        │
@@ -328,7 +349,7 @@ public class Organization : BaseEntity
 		 │                 │                  │
 		 ▼ 1:N             ▼ 1:N              │
 ┌──────────────────┐  ┌──────────────────┐   │
-│  EQUIPMENT       │  │      USER        │   │
+│      ITEM        │  │      USER        │   │
 ├──────────────────┤  ├──────────────────┤   │
 │ Id (PK)          │  │ Id (PK)          │   │
 │ Tag              │  │ Name             │   │
@@ -351,7 +372,7 @@ public class Organization : BaseEntity
 ├──────────────────────────────────────────┤
 │ Id (PK)                                  │
 │ CertificateNumber                        │
-│ EquipmentId (FK)    ──────────┐         │
+│ ItemId (FK)         ──────────┐         │
 │ PerformedById (FK)  ───────────┼──┐     │
 │ SignedById (FK)     ───────────┼──┼──┐  │
 │ CalibrationDate                │  │  │  │

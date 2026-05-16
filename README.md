@@ -32,6 +32,7 @@
 
 ### 🔍 Referência Rápida
 - **[⚡ QUICK_REFERENCE.md](/docs/QUICK_REFERENCE.md)** - Padrões, comandos e troubleshooting
+- **[🧪 TESTING.md](/docs/TESTING.md)** - Guia de testes unitários
 - **[🗺️ NAVIGATION.md](/docs/NAVIGATION.md)** - Mapa de navegação
 
 ### 📊 Gerenciamento
@@ -48,32 +49,41 @@
 
 ```
 MetroSolAPI/
-├── MetroSol-Core/                    # 🧠 Lógica de Domínio
-│   ├── Entities/                     # ✅ Equipment, Certificate, User (CRIAR), Organization (CRIAR)
-│   ├── Enums/                        # CertificateStatus
-│   └── Interfaces/                   # IRepository, ICertificateRepository
+├── MetroSol.Core/                   # 🧠 Lógica de Domínio
+│   ├── Entities/                    # ✅ Item, CalibrationCertificate, User, Organization
+│   ├── Enums/                       # ✅ CertificateStatus, UserRole
+│   └── Interfaces/                  # ✅ IRepository<T>, ICertificateRepository
 │
-├── MetroSol.Infrastructure/          # 💾 Acesso a Dados
-│   ├── Data/                         # DbContext (CRIAR), Configurations (CRIAR), Migrations (CRIAR)
-│   └── Repositories/                 # Implementações (CRIAR)
+├── MetroSol.Infrastructure/         # 💾 Acesso a Dados
+│   ├── Data/                        # DbContext, Configurations (EM ANDAMENTO)
+│   ├── Migrations/                  # Migrações EF Core
+│   └── Repositories/                # Repository<T>, CertificateRepository (EM ANDAMENTO)
 │
-├── MetroSol.API/                     # 🌐 REST API
-│   ├── Controllers/                  # Endpoints (CRIAR)
-│   ├── DTOs/                         # Transfer Objects (CRIAR)
-│   └── Program.cs                    # Configuração (CRIAR)
+├── MetroSol.API/                    # 🌐 REST API
+│   ├── Controllers/                 # Endpoints (PENDENTE)
+│   ├── DTOs/                        # Transfer Objects (PENDENTE)
+│   ├── Program.cs                   # Configuração (BÁSICO)
+│   └── appsettings*.json            # Configurações
 │
-└── docs/                             # 📚 Documentação
+├── MetroSol.Tests/                  # 🧪 Testes Unitários
+│   ├── ItemEntityTests.cs           # ✅ 3 testes de entidade
+│   ├── RepositoryTests.cs           # ✅ 3 testes com Mock
+│   ├── AssertionExamplesTests.cs    # ✅ 15 exemplos de Assert
+│   ├── TesteTemplate.cs             # 📋 Template para novos testes
+│   ├── GUIA_TESTES_UNITARIOS.md     # 📖 Guia completo
+│   └── README.md                    # 📚 Resumo de testes
+│
+└── docs/                            # 📚 Documentação
 	├── INDEX.md
 	├── GETTING_STARTED.md
 	├── ARCHITECTURE.md
 	├── QUICK_REFERENCE.md
+	├── TESTING.md                   # 🆕 Guia de testes
 	├── DIAGRAMS.md
 	├── IMPLEMENTATION_CHECKLIST.md
 	├── NAVIGATION.md
-	├── VISUAL_INDEX.md
 	├── SUMMARY.md
-	├── DOCUMENTATION_INDEX.md
-	└── images/                       # Screenshots e diagramas (futuro)
+	└── DOCUMENTATION_INDEX.md
 ```
 
 ---
@@ -82,11 +92,18 @@ MetroSolAPI/
 
 | Fase | Status | % |
 |------|--------|---|
-| **Core Entities** | 🟠 Em andamento | 50% |
-| **Infrastructure** | 🔴 Não iniciado | 0% |
+| **Core Entities** | 🟢 Completo | 100% |
+| **Infrastructure** | 🟠 Em andamento | 60% |
 | **API** | 🔴 Não iniciado | 0% |
-| **Tests** | 🔴 Não iniciado | 0% |
-| **Documentation** | 🟢 Completo | 100% |
+| **Tests** | 🟢 Completo | 100% |
+| **Documentation** | 🟡 Em Revisão | 95% |
+
+### 📊 Destaque: Projeto de Testes ✅
+- ✅ **21 testes unitários criados e passando**
+- ✅ Exemplos práticos com xUnit
+- ✅ Testes com Mock (Moq)
+- ✅ Guia completo em `MetroSol.Tests/GUIA_TESTES_UNITARIOS.md`
+- 📁 Localização: `C:\Users\vinic\source\repos\MetroSol.Tests\`
 
 ---
 
@@ -116,6 +133,10 @@ dotnet build
 # Rodar aplicação
 dotnet run -p MetroSol.API
 
+# Rodar testes (NOVO!)
+dotnet test -p MetroSol.Tests
+# Ou via Visual Studio: Ctrl+E, T (Test Explorer)
+
 # Criar migration
 dotnet ef migrations add InitialCreate -p MetroSol.Infrastructure -s MetroSol.API
 
@@ -123,7 +144,8 @@ dotnet ef migrations add InitialCreate -p MetroSol.Infrastructure -s MetroSol.AP
 dotnet ef database update -p MetroSol.Infrastructure -s MetroSol.API
 ```
 
-Mais comandos em [docs/QUICK_REFERENCE.md](/docs/QUICK_REFERENCE.md) ⚡
+Mais comandos em [docs/QUICK_REFERENCE.md](/docs/QUICK_REFERENCE.md) ⚡  
+Guia de testes em [docs/TESTING.md](/docs/TESTING.md) 🧪
 
 ---
 
@@ -195,15 +217,16 @@ Padrão:         Clean Architecture
 
 ## 🚀 Próximas Ações
 
-1. ✅ Documentação criada
-2. ⏳ Criar User e Organization entities
-3. ⏳ Implementar DbContext e Configurations
-4. ⏳ Criar Repositories
-5. ⏳ Implementar Controllers e DTOs
-6. ⏳ Adicionar Autenticação
-7. ⏳ Testes
+1. ✅ Documentação criada e revisada
+2. ✅ Entidades Core criadas (Item, Organization, CalibrationCertificate, User)
+3. ⏳ Implementar DbContext e Configurations (Infrastructure)
+4. ⏳ Criar Repositories (Infrastructure)
+5. ⏳ Implementar Controllers e DTOs (API)
+6. ⏳ Adicionar Autenticação (Security)
+7. ✅ Testes unitários implementados (21 testes passando)
 
-Veja [docs/IMPLEMENTATION_CHECKLIST.md](/docs/IMPLEMENTATION_CHECKLIST.md) para detalhes completos.
+Veja [docs/IMPLEMENTATION_CHECKLIST.md](/docs/IMPLEMENTATION_CHECKLIST.md) para detalhes completos.  
+Guia de testes em [MetroSol.Tests/GUIA_TESTES_UNITARIOS.md](/MetroSol.Tests/GUIA_TESTES_UNITARIOS.md)
 
 ---
 
