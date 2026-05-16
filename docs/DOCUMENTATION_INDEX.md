@@ -1,241 +1,241 @@
-# 📚 Índice de Documentação - MetroSolAPI
+# 📚 Documentation Index - MetroSolAPI
 
-> Guia centralizado para toda a documentação do projeto
+> Centralized guide for all project documentation
 
 ---
 
-## 📋 Documentos Disponíveis
+## 📋 Available Documents
 
 ### 1. **ARCHITECTURE.md** 🏗️
-📖 Leitura: ~15-20 minutos  
-👥 Público: Arquitetos, Tech Leads, Desenvolvedores Iniciantes
+📖 Reading time: ~15-20 minutes  
+👥 Audience: Architects, Tech Leads, Junior Developers
 
-**Conteúdo:**
-- Visão geral da solução
-- Estrutura dos 3 projetos (Core, Infrastructure, API)
-- Especificação completa de todas as entidades
-- Relacionamentos entre tabelas
-- Padrões implementados (Soft Delete, Auditoria, Repository Pattern)
-- Stack tecnológico
+**Content:**
+- Solution overview
+- Structure of the 3 projects (Core, Infrastructure, API)
+- Complete specification of all entities
+- Table relationships
+- Implemented patterns (Soft Delete, Auditing, Repository Pattern)
+- Technology stack
 
-**Quando usar:**
-- ✅ Entender a arquitetura geral
-- ✅ Onboarding de novos desenvolvedores
-- ✅ Referência das entidades
-- ✅ Documentação do projeto
+**When to use:**
+- ✅ Understand the overall architecture
+- ✅ Onboarding new developers
+- ✅ Entity reference
+- ✅ Project documentation
 
-**Acesso rápido:** [Abrir ARCHITECTURE.md](./ARCHITECTURE.md)
+**Quick access:** [Open ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
 
 ### 2. **QUICK_REFERENCE.md** ⚡
-📖 Leitura: ~5-10 minutos  
-👥 Público: Desenvolvedores em Produção
+📖 Reading time: ~5-10 minutes  
+👥 Audience: Developers in production
 
-**Conteúdo:**
-- Estrutura dos projetos (resumida)
-- Referência rápida de entidades
-- Padrões de código (Do's and Don'ts)
-- Relacionamentos rápidos
-- Comandos úteis (EF Core, Build, etc)
-- Troubleshooting comum
-- Fluxo típico de dados
+**Content:**
+- Project structure (summarized)
+- Quick entity reference
+- Code patterns (Do's and Don'ts)
+- Quick relationships
+- Useful commands (EF Core, Build, etc.)
+- Common troubleshooting
+- Typical data flow
 
-**Quando usar:**
-- ✅ Consulta rápida durante desenvolvimento
-- ✅ Lembrar padrões de código
-- ✅ Copiar comandos úteis
-- ✅ Resolver problemas comuns
-- ✅ Verificar boas práticas
+**When to use:**
+- ✅ Quick lookup during development
+- ✅ Remembering code patterns
+- ✅ Copying useful commands
+- ✅ Solving common problems
+- ✅ Verifying best practices
 
-**Acesso rápido:** [Abrir QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
+**Quick access:** [Open QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
 
 ---
 
 ### 3. **IMPLEMENTATION_CHECKLIST.md** ✅
-📖 Leitura: ~10-15 minutos (Referência)  
-👥 Público: Project Managers, Tech Leads
+📖 Reading time: ~10-15 minutes (Reference)  
+👥 Audience: Project Managers, Tech Leads
 
-**Conteúdo:**
-- Checklist de 7 fases de implementação
-- Status de cada tarefa
-- Rastreamento de progresso
-- Dependências entre fases
-- Estimativas de prioridade
-- Checklist de testes e validações
+**Content:**
+- Checklist of 7 implementation phases
+- Status of each task
+- Progress tracking
+- Dependencies between phases
+- Priority estimates
+- Testing and validation checklist
 
-**Quando usar:**
-- ✅ Rastrear progresso do projeto
-- ✅ Planejar sprints
-- ✅ Identificar próximas ações
-- ✅ Comunicar status com stakeholders
-- ✅ Evitar o esquecimento de tarefas
+**When to use:**
+- ✅ Track project progress
+- ✅ Plan sprints
+- ✅ Identify next actions
+- ✅ Communicate status with stakeholders
+- ✅ Avoid missing tasks
 
-**Acesso rápido:** [Abrir IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
+**Quick access:** [Open IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
 
 ---
 
 ### 4. **DIAGRAMS.md** 📊
-📖 Leitura: ~5-10 minutos  
-👥 Público: Todos os envolvidos
+📖 Reading time: ~5-10 minutes  
+👥 Audience: Everyone involved
 
-**Conteúdo:**
-- Diagrama de arquitetura em camadas
-- Relacionamento entre entidades (ER Diagram)
-- Fluxo de criação de dados
-- Fluxo de atualização de dados
-- Fluxo de soft delete
-- Fluxo de autorização e multi-tenancy
-- Exemplos de dados válidos
+**Content:**
+- Layered architecture diagram
+- Entity relationships (ER Diagram)
+- Data creation flow
+- Data update flow
+- Soft delete flow
+- Authorization and multi-tenancy flow
+- Valid data examples
 
-**Quando usar:**
-- ✅ Visualizar arquitetura
-- ✅ Entender fluxos de dados
-- ✅ Explicar para stakeholders
-- ✅ Entender relacionamentos
-- ✅ Referência visual
+**When to use:**
+- ✅ Visualize architecture
+- ✅ Understand data flows
+- ✅ Explain to stakeholders
+- ✅ Understand relationships
+- ✅ Visual reference
 
-**Acesso rápido:** [Abrir DIAGRAMS.md](./DIAGRAMS.md)
-
----
-
-### 5. **DOCUMENTATION_INDEX.md** (Este arquivo) 📚
-📖 Leitura: ~2-3 minutos  
-👥 Público: Todos
-
-**Conteúdo:**
-- Índice centralizado
-- Descrição de cada documento
-- Como escolher qual documento ler
-- Fluxo de leitura recomendado
-- Matriz de referência
+**Quick access:** [Open DIAGRAMS.md](./DIAGRAMS.md)
 
 ---
 
-## 🗺️ Mapa de Navegação
+### 5. **DOCUMENTATION_INDEX.md** (This file) 📚
+📖 Reading time: ~2-3 minutes  
+👥 Audience: Everyone
+
+**Content:**
+- Centralized index
+- Description of each document
+- How to choose which document to read
+- Recommended reading flow
+- Reference matrix
+
+---
+
+## 🗺️ Navigation Map
 
 ```
 ┌─────────────────────────────────────────────┐
-│         NOVO NO PROJETO?                    │
-│  (Primeira vez aqui)                       │
+│         NEW TO THE PROJECT?                 │
+│  (First time here)                          │
 └────────────┬────────────────────────────────┘
 			 │
 			 ▼
 	┌─────────────────────────┐
-	│  Leia ARCHITECTURE.md   │
-	│  (Entenda tudo)         │
+	│  Read ARCHITECTURE.md   │
+	│  (Understand everything)│
 	└──────────┬──────────────┘
 			   │
 			   ▼
 	┌──────────────────────────────┐
-	│  Leia DIAGRAMS.md            │
-	│  (Visualize a arquitetura)   │
+	│  Read DIAGRAMS.md            │
+	│  (Visualize the architecture)│
 	└──────────┬───────────────────┘
 			   │
 			   ▼
 	┌──────────────────────────┐
 	│  Bookmark QUICK_REFERENCE│
-	│  (Para consultas rápidas)│
+	│  (For quick lookups)     │
 	└──────────────────────────┘
 
 
 ┌─────────────────────────────────────────────┐
-│         DESENVOLVENDO AGORA?                │
-│  (Durante implementação)                    │
+│         DEVELOPING NOW?                     │
+│  (During implementation)                    │
 └────────────┬────────────────────────────────┘
 			 │
 			 ▼
 	┌──────────────────────────┐
 	│  Use QUICK_REFERENCE.md  │
-	│  (Dúvidas rápidas)       │
+	│  (Quick questions)       │
 	└──────────┬───────────────┘
 			   │
 			   ▼
 	┌──────────────────────────┐
-	│  Consulte DIAGRAMS.md    │
-	│  (Se precisa ver fluxo)  │
+	│  Check DIAGRAMS.md       │
+	│  (If you need a flow)    │
 	└──────────┬───────────────┘
 			   │
 			   ▼
 	┌──────────────────────────┐
-	│  Volte a ARCHITECTURE.md │
-	│  (Para detalhes)         │
+	│  Return to ARCHITECTURE  │
+	│  (For details)           │
 	└──────────────────────────┘
 
 
 ┌─────────────────────────────────────────────┐
-│         GERENCIANDO O PROJETO?              │
+│         MANAGING THE PROJECT?               │
 │  (Tech Lead / Project Manager)              │
 └────────────┬────────────────────────────────┘
 			 │
 			 ▼
 	┌────────────────────────────────┐
-	│  Use IMPLEMENTATION_CHECKLIST   │
-	│  (Rastreie progresso)          │
+	│  Use IMPLEMENTATION_CHECKLIST  │
+	│  (Track progress)              │
 	└────────────┬───────────────────┘
 			   │
 			   ▼
 	┌──────────────────────────┐
-	│  Consulte ARCHITECTURE   │
-	│  (Para estimativas)      │
+	│  Check ARCHITECTURE      │
+	│  (For estimates)         │
 	└──────────────────────────┘
 ```
 
 ---
 
-## 🎯 Guia de Leitura Recomendado
+## 🎯 Recommended Reading Guide
 
-### Para Desenvolvedores Novos
-1. **Primeiro:** ARCHITECTURE.md (15 min)
-   - Entender visão geral
-   - Ver estrutura de entidades
+### For New Developers
+1. **First:** ARCHITECTURE.md (15 min)
+   - Understand the overview
+   - See entity structure
 
-2. **Segundo:** DIAGRAMS.md (10 min)
-   - Visualizar relacionamentos
-   - Entender fluxos
+2. **Second:** DIAGRAMS.md (10 min)
+   - Visualize relationships
+   - Understand flows
 
-3. **Terceiro:** QUICK_REFERENCE.md (5 min)
-   - Aprender padrões
-   - Salvar para consultas
+3. **Third:** QUICK_REFERENCE.md (5 min)
+   - Learn patterns
+   - Save for future lookups
 
-**Tempo total:** ~30 minutos
-
----
-
-### Para Desenvolvedores Experientes
-1. **Primeiro:** QUICK_REFERENCE.md (5 min)
-   - Checklist de padrões
-   - Comandos úteis
-
-2. **Segundo:** ARCHITECTURE.md (seções específicas, 5 min)
-   - Referência de entidades conforme necessário
-
-3. **Terceiro:** DIAGRAMS.md (conforme necessário)
-   - Visualização de fluxos específicos
-
-**Tempo total:** ~10 minutos
+**Total time:** ~30 minutes
 
 ---
 
-### Para Project Managers / Tech Leads
-1. **Primeiro:** IMPLEMENTATION_CHECKLIST.md (10 min)
-   - Entender fases
-   - Rastrear progresso
+### For Experienced Developers
+1. **First:** QUICK_REFERENCE.md (5 min)
+   - Patterns checklist
+   - Useful commands
 
-2. **Segundo:** ARCHITECTURE.md (5 min)
-   - Visão geral de arquitetura
+2. **Second:** ARCHITECTURE.md (specific sections, 5 min)
+   - Entity reference as needed
 
-3. **Terceiro:** DIAGRAMS.md (5 min)
-   - Explicar para stakeholders
+3. **Third:** DIAGRAMS.md (as needed)
+   - Specific flow visualization
 
-**Tempo total:** ~20 minutos
+**Total time:** ~10 minutes
 
 ---
 
-## 📊 Matriz de Referência
+### For Project Managers / Tech Leads
+1. **First:** IMPLEMENTATION_CHECKLIST.md (10 min)
+   - Understand phases
+   - Track progress
 
-| Documento | Arquitetura | Entidades | Código | Fluxos | Progresso | Onboarding |
-|-----------|-------------|-----------|--------|--------|-----------|-----------|
+2. **Second:** ARCHITECTURE.md (5 min)
+   - Architecture overview
+
+3. **Third:** DIAGRAMS.md (5 min)
+   - Explain to stakeholders
+
+**Total time:** ~20 minutes
+
+---
+
+## 📊 Reference Matrix
+
+| Document | Architecture | Entities | Code | Flows | Progress | Onboarding |
+|----------|-------------|----------|------|-------|----------|-----------|
 | **ARCHITECTURE.md** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐ | ⭐⭐⭐⭐⭐ |
 | **QUICK_REFERENCE.md** | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐ | ⭐⭐⭐ |
 | **DIAGRAMS.md** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐ | ⭐⭐⭐⭐⭐ | ⭐ | ⭐⭐⭐⭐ |
@@ -243,99 +243,99 @@
 
 ---
 
-## 🔍 Encontre o Que Você Procura
+## 🔍 Find What You're Looking For
 
-### Procurando por...
+### Looking for...
 
-#### ✅ "Quero entender a arquitetura"
-→ **ARCHITECTURE.md** - Leia seção "Visão Geral da Arquitetura"
+#### ✅ "I want to understand the architecture"
+→ **ARCHITECTURE.md** - Read section "Architecture Overview"
 
-#### ✅ "Qual é a estrutura de pastas?"
-→ **ARCHITECTURE.md** - Leia seção "Estrutura dos Projetos"
+#### ✅ "What is the folder structure?"
+→ **ARCHITECTURE.md** - Read section "Project Structure"
 
-#### ✅ "Como é a entidade Equipment?"
-→ **ARCHITECTURE.md** - Leia seção "Equipment"  
-→ **QUICK_REFERENCE.md** - Leia seção "Equipment"
+#### ✅ "What does the Equipment entity look like?"
+→ **ARCHITECTURE.md** - Read section "Equipment"  
+→ **QUICK_REFERENCE.md** - Read section "Equipment"
 
-#### ✅ "Qual é o padrão de código?"
-→ **QUICK_REFERENCE.md** - Leia seção "Padrões de Código"
+#### ✅ "What is the code pattern?"
+→ **QUICK_REFERENCE.md** - Read section "Code Patterns"
 
-#### ✅ "Qual é o comando EF Core?"
-→ **QUICK_REFERENCE.md** - Leia seção "Comandos Úteis"
+#### ✅ "What is the EF Core command?"
+→ **QUICK_REFERENCE.md** - Read section "Useful Commands"
 
-#### ✅ "Como são os relacionamentos?"
-→ **DIAGRAMS.md** - Leia seção "Diagrama de Relacionamentos"  
-→ **ARCHITECTURE.md** - Leia seção "Diagrama de Relacionamentos"
+#### ✅ "How are the relationships?"
+→ **DIAGRAMS.md** - Read section "Relationship Diagram"  
+→ **ARCHITECTURE.md** - Read section "Relationship Diagram"
 
-#### ✅ "Qual é o fluxo de dados?"
-→ **DIAGRAMS.md** - Leia seções de Fluxo
+#### ✅ "What is the data flow?"
+→ **DIAGRAMS.md** - Read the Flow sections
 
-#### ✅ "Como é soft delete?"
-→ **DIAGRAMS.md** - Leia seção "Fluxo de Deleção - Soft Delete"  
-→ **QUICK_REFERENCE.md** - Leia seção "Como fazer Soft Delete?"
+#### ✅ "How does soft delete work?"
+→ **DIAGRAMS.md** - Read section "Deletion Flow - Soft Delete"  
+→ **QUICK_REFERENCE.md** - Read section "How to do Soft Delete?"
 
-#### ✅ "Tenho um erro, como resolvo?"
-→ **QUICK_REFERENCE.md** - Leia seção "Troubleshooting"
+#### ✅ "I have an error, how do I fix it?"
+→ **QUICK_REFERENCE.md** - Read section "Troubleshooting"
 
-#### ✅ "Como está o progresso?"
-→ **IMPLEMENTATION_CHECKLIST.md** - Leia seção "Resumo de Progresso"
+#### ✅ "What is the current progress?"
+→ **IMPLEMENTATION_CHECKLIST.md** - Read section "Progress Summary"
 
-#### ✅ "Qual é a próxima tarefa?"
-→ **IMPLEMENTATION_CHECKLIST.md** - Leia seção "Próximas Etapas"
+#### ✅ "What is the next task?"
+→ **IMPLEMENTATION_CHECKLIST.md** - Read section "Next Steps"
 
-#### ✅ "Preciso visualizar para explicar"
-→ **DIAGRAMS.md** - Use os diagramas ASCII
-
----
-
-## 📝 Histórico de Documentação
-
-| Data | Versão | Documento | Status | Notas |
-|------|--------|-----------|--------|-------|
-| 2024 | 1.0 | ARCHITECTURE.md | ✅ Criado | Documentação inicial |
-| 2024 | 1.0 | QUICK_REFERENCE.md | ✅ Criado | Guia rápido |
-| 2024 | 1.0 | IMPLEMENTATION_CHECKLIST.md | ✅ Criado | Rastreamento de tarefas |
-| 2024 | 1.0 | DIAGRAMS.md | ✅ Criado | Diagramas visuais |
-| 2024 | 1.0 | DOCUMENTATION_INDEX.md | ✅ Criado | Este índice |
+#### ✅ "I need a visual to explain something"
+→ **DIAGRAMS.md** - Use the ASCII diagrams
 
 ---
 
-## 🚀 Como Manter a Documentação Atualizada
+## 📝 Documentation History
 
-### Quando Adicionar User.cs
-- [ ] Atualizar ARCHITECTURE.md (seção User)
-- [ ] Atualizar DIAGRAMS.md (ER diagram)
-- [ ] Marcar como ✅ em IMPLEMENTATION_CHECKLIST.md
-
-### Quando Criar DbContext
-- [ ] Atualizar ARCHITECTURE.md (seção Infrastructure)
-- [ ] Adicionar screenshot em DIAGRAMS.md
-- [ ] Marcar como ✅ em IMPLEMENTATION_CHECKLIST.md
-
-### Quando Criar Novo Endpoint
-- [ ] Atualizar QUICK_REFERENCE.md (adicionar padrão)
-- [ ] Atualizar DIAGRAMS.md (se novo fluxo)
-- [ ] Marcar em IMPLEMENTATION_CHECKLIST.md
-
-### Regra Geral
-**Quando alterar código, atualize a documentação dentro de 24 horas**
+| Date | Version | Document | Status | Notes |
+|------|---------|----------|--------|-------|
+| 2024 | 1.0 | ARCHITECTURE.md | ✅ Created | Initial documentation |
+| 2024 | 1.0 | QUICK_REFERENCE.md | ✅ Created | Quick guide |
+| 2024 | 1.0 | IMPLEMENTATION_CHECKLIST.md | ✅ Created | Task tracking |
+| 2024 | 1.0 | DIAGRAMS.md | ✅ Created | Visual diagrams |
+| 2024 | 1.0 | DOCUMENTATION_INDEX.md | ✅ Created | This index |
 
 ---
 
-## 🔗 Links Rápidos
+## 🚀 How to Keep Documentation Up to Date
 
-### Documentação
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - Arquitetura completa
-- [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Referência rápida
-- [DIAGRAMS.md](./DIAGRAMS.md) - Diagramas visuais
-- [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) - Progresso
+### When Adding User.cs
+- [ ] Update ARCHITECTURE.md (User section)
+- [ ] Update DIAGRAMS.md (ER diagram)
+- [ ] Mark as ✅ in IMPLEMENTATION_CHECKLIST.md
 
-### Código
-- `MetroSol-Core/Entities/` - Entidades do domínio
-- `MetroSol.Infrastructure/Data/` - Camada de dados
+### When Creating DbContext
+- [ ] Update ARCHITECTURE.md (Infrastructure section)
+- [ ] Add screenshot to DIAGRAMS.md
+- [ ] Mark as ✅ in IMPLEMENTATION_CHECKLIST.md
+
+### When Creating a New Endpoint
+- [ ] Update QUICK_REFERENCE.md (add pattern)
+- [ ] Update DIAGRAMS.md (if new flow)
+- [ ] Mark in IMPLEMENTATION_CHECKLIST.md
+
+### General Rule
+**When changing code, update documentation within 24 hours**
+
+---
+
+## 🔗 Quick Links
+
+### Documentation
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Complete architecture
+- [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Quick reference
+- [DIAGRAMS.md](./DIAGRAMS.md) - Visual diagrams
+- [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) - Progress
+
+### Code
+- `MetroSol-Core/Entities/` - Domain entities
+- `MetroSol.Infrastructure/Data/` - Data layer
 - `MetroSol.API/Controllers/` - Endpoints
 
-### Referências Externas
+### External References
 - [ASP.NET Core Docs](https://docs.microsoft.com/aspnet/core)
 - [EF Core Docs](https://docs.microsoft.com/ef/core)
 - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
@@ -344,45 +344,45 @@
 
 ## ❓ FAQ
 
-**P: Por onde começo?**  
-R: Leia [ARCHITECTURE.md](./ARCHITECTURE.md) primeiro, depois [DIAGRAMS.md](./DIAGRAMS.md), depois salve [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) nos favoritos.
+**Q: Where do I start?**  
+A: Read [ARCHITECTURE.md](./ARCHITECTURE.md) first, then [DIAGRAMS.md](./DIAGRAMS.md), then bookmark [QUICK_REFERENCE.md](./QUICK_REFERENCE.md).
 
-**P: A documentação está desatualizada?**  
-R: Por favor, abra uma issue ou envie um PR com as correções. A documentação deve sempre refletir o código.
+**Q: Is the documentation outdated?**  
+A: Please open an issue or send a PR with corrections. Documentation must always reflect the code.
 
-**P: Posso imprimir a documentação?**  
-R: Sim! Recomendamos imprimir em modo de resumo (sem cores de fundo) para economizar tinta.
+**Q: Can I print the documentation?**  
+A: Yes! We recommend printing in summary mode (no background colors) to save ink.
 
-**P: Há mais documentação?**  
-R: Verifique o repositório do projeto. Pode haver documentação de API, deployment, etc.
+**Q: Is there more documentation?**  
+A: Check the project repository. There may be API, deployment, or other documentation.
 
-**P: Preciso compartilhar com alguém fora do projeto?**  
-R: Use [ARCHITECTURE.md](./ARCHITECTURE.md) para arquitetos e stakeholders. Use [DIAGRAMS.md](./DIAGRAMS.md) para visualizações gerais.
-
----
-
-## 📞 Suporte
-
-- **Dúvidas sobre código:** Consulte [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
-- **Dúvidas sobre arquitetura:** Consulte [ARCHITECTURE.md](./ARCHITECTURE.md)
-- **Dúvidas sobre fluxos:** Consulte [DIAGRAMS.md](./DIAGRAMS.md)
-- **Dúvidas sobre progresso:** Consulte [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
+**Q: I need to share it with someone outside the project?**  
+A: Use [ARCHITECTURE.md](./ARCHITECTURE.md) for architects and stakeholders. Use [DIAGRAMS.md](./DIAGRAMS.md) for general visualizations.
 
 ---
 
-## 📄 Licença e Atribuição
+## 📞 Support
 
-Esta documentação é parte do projeto **MetroSolAPI**  
-Versão: .NET 10  
-Linguagem: C# 13  
+- **Code questions:** See [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
+- **Architecture questions:** See [ARCHITECTURE.md](./ARCHITECTURE.md)
+- **Flow questions:** See [DIAGRAMS.md](./DIAGRAMS.md)
+- **Progress questions:** See [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
+
+---
+
+## 📄 License and Attribution
+
+This documentation is part of the **MetroSolAPI** project  
+Version: .NET 10  
+Language: C# 13  
 Framework: ASP.NET Core + EF Core
 
 ---
 
-**Última atualização:** 2024  
-**Próxima revisão:** Quando alterar estrutura de projetos  
-**Status:** ✅ Completa e Atualizada
+**Last updated:** 2024  
+**Next review:** When changing project structure  
+**Status:** ✅ Complete and Up to Date
 
 ---
 
-> 💡 **Dica:** Salve este arquivo nos seus favoritos! É o ponto central para toda a documentação do projeto.
+> 💡 **Tip:** Bookmark this file! It is the central point for all project documentation.

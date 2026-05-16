@@ -242,8 +242,8 @@ Dia 2+:
 
 ---
 
-**Versão:** 1.0  
-**Status:** ✅ COMPLETO  
-**Última atualização:** 2024
+**Versão:** 1.2  
+**Status:** ⏳ Em andamento (~60%)  
+**Última atualização:** 2026-05-16
 
 > 🎯 **Comece agora:** Escolha um documento acima e abra!

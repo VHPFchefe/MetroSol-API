@@ -1,181 +1,127 @@
-# ⚡ Quick Start - MetroSolAPI
+# Getting Started — MetroSolAPI
 
-> Comece em 5 minutos!
+> Ambiente funcional em ~10 minutos | Atualizado: 2026-05-16
 
 ---
 
-## 🚀 Você tem 5 minutos?
+## Pré-requisitos
 
-### 1. Clone o repositório
-```bash
-git clone https://github.com/seu-repo/MetroSolAPI
+- .NET 10 SDK
+- SQL Server (local em 127.0.0.1:1433) ou SQL Server Express
+- EF Core CLI: `dotnet tool install --global dotnet-ef`
+
+---
+
+## 1. Clonar e restaurar
+
+```powershell
+git clone <url-do-repo>
 cd MetroSolAPI
-```
-
-### 2. Instale dependências
-```bash
 dotnet restore
 ```
 
-### 3. Configure banco de dados
-Edite `appsettings.json` em `MetroSol.API`:
+---
+
+## 2. Configurar banco de dados
+
+Crie `MetroSolAPI/appsettings.local.json` (não commitado):
+
 ```json
 {
   "ConnectionStrings": {
-	"DefaultConnection": "Server=localhost;Database=MetroSolAPI;Trusted_Connection=true;"
+    "DefaultConnection": "Server=127.0.0.1,1433;Database=MetroSolDb;User Id=sa;Password=SUA_SENHA;TrustServerCertificate=True"
+  },
+  "Jwt": {
+    "Key": "sua-chave-secreta-minimo-32-chars",
+    "Issuer": "MetroSolAPI",
+    "Audience": "MetroSolClients"
   }
 }
 ```
 
-### 4. Crie o banco
-```bash
-dotnet ef database update -p MetroSol.Infrastructure -s MetroSol.API
-```
-
-### 5️⃣ 🆕 Rode os testes
-```bash
-# Via terminal
-cd MetroSol.Tests
-dotnet test
-
-# Via Visual Studio
-# Ctrl+E, T (abrir Test Explorer)
-# Clique em "Run All"
-```
-
-### 6. Rode a aplicação
-```bash
-dotnet run -p MetroSol.API
-```
-
-✅ **Pronto!** A API está rodando em `https://localhost:5001`  
-✅ **Testes:** 21 testes passando em `MetroSol.Tests`
-
 ---
 
-## 📚 Próximas Leituras (por importância)
-
-| # | Documento | Tempo | Por quê |
-|---|-----------|-------|---------|
-| 1 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 15 min | Entender estrutura |
-| 2 | [DIAGRAMS.md](./DIAGRAMS.md) | 10 min | Visualizar entidades |
-| 3 | [TESTING.md](./TESTING.md) | 15 min | 🆕 Entender testes (21 testes passando!) |
-| 4 | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | 10 min | Padrões de código |
-| 5 | [MetroSol.Tests/GUIA_TESTES_UNITARIOS.md](../MetroSol.Tests/GUIA_TESTES_UNITARIOS.md) | 30 min | Guia completo de testes em português |
-
----
-
-## 🧪 Primeiro Teste?
-
-Rode os testes existentes:
+## 3. Gerar e aplicar migration
 
 ```powershell
-# Via terminal
-cd C:\Users\vinic\source\repos\MetroSol.Tests
-dotnet test
+# Gerar migration com o schema completo do ERD
+dotnet ef migrations add FullERD `
+  --project MetroSol.Infrastructure `
+  --startup-project MetroSolAPI
 
-# Você deve ver:
-# ✅ 21 testes passando
-# ✅ 0 falhados
-# ✅ Tempo: ~2.8s
-```
-
-**Depois de rodar:** Veja [TESTING.md](./TESTING.md) para entender cada teste! 📖
-
----
-
-## 🎯 Estrutura da Solução
-
-```
-MetroSolAPI/
-├── MetroSol.Core/           ✅ 100% - Entidades e interfaces
-├── MetroSol.Infrastructure/ ⏳ 60% - DbContext e Repositories (EM ANDAMENTO)
-├── MetroSol.API/            ⏳ 20% - Controllers e DTOs (PENDENTE)
-└── MetroSol.Tests/          ✅ 100% - 21 Testes Unitários
+# Criar o banco e aplicar
+dotnet ef database update `
+  --project MetroSol.Infrastructure `
+  --startup-project MetroSolAPI
 ```
 
 ---
 
-## 🚀 Próximos Passos
-
-1. ✅ Você criou um clone funcional
-2. ✅ Testes estão rodando
-3. ⏳ Leia ARCHITECTURE.md para entender design
-4. ⏳ Implemente DbContext (Infrastructure)
-5. ⏳ Crie Controllers (API)
-
----
-
-## 🔗 Links Rápidos
-
-- 📖 [ARCHITECTURE.md](./ARCHITECTURE.md) - Entenda a estrutura
-- 🧪 [TESTING.md](./TESTING.md) - Testes unitários
-- ⚡ [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Referência rápida
-- 📊 [DIAGRAMS.md](./DIAGRAMS.md) - Diagramas de entidades
-- ✅ [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) - O que fazer
-
----
-
-## 🎯 Estrutura Rápida
-
-```
-✅ Entidades Criadas:
-  • Equipment - Equipamento para calibrar
-  • CalibrationCertificate - Certificado
-  • BaseEntity - Classe base (audit, soft delete)
-
-⏳ Faltam Criar:
-  • User - Usuário do sistema
-  • Organization - Organização proprietária
-  • DbContext - Acesso a dados
-  • Repositories - Camada de dados
-  • Controllers - Endpoints da API
-```
-
----
-
-## 🔧 Comandos Úteis
+## 4. Rodar testes
 
 ```powershell
-# Build
-dotnet build
-
-# Run
-dotnet run -p MetroSol.API
-
-# Create migration
-dotnet ef migrations add InitialCreate -p MetroSol.Infrastructure -s MetroSol.API
-
-# Update database
-dotnet ef database update -p MetroSol.Infrastructure -s MetroSol.API
-
-# Tests
 dotnet test
+# Esperado: 21 testes passando, 0 falhados
 ```
 
 ---
 
-## ❓ Perguntas Comuns?
+## 5. Rodar a API
 
-### "Como é a arquitetura?"
-→ Leia [ARCHITECTURE.md](./ARCHITECTURE.md)
-
-### "Qual é o padrão de código?"
-→ Veja [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
-
-### "Qual é a próxima tarefa?"
-→ Consulte [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
-
-### "Onde acho X?"
-→ Use [NAVIGATION.md](./NAVIGATION.md)
+```powershell
+dotnet run --project MetroSolAPI
+# API disponível em https://localhost:5001
+# Docs Scalar: https://localhost:5001/scalar/v1
+```
 
 ---
 
-## 📚 Índice Completo
+## Estado atual da API
 
-Volte a [INDEX.md](./INDEX.md) para navegação completa.
+```
+MetroSol.Core/           ✅ 100% — 15 entidades, 8 enums, interfaces
+MetroSol.Infrastructure/ ✅ 95%  — DbContext + Repository (migration pendente)
+MetroSolAPI/             ⏳ 35%  — Auth + ItemController prontos
+MetroSol.Tests/          ✅ 100% — 21 testes passando
+```
+
+### Endpoints disponíveis
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | /auth/login | Login → JWT pair |
+| POST | /auth/refresh | Renovar access token |
+| POST | /auth/logout | Revogar refresh token |
+| GET | /api/items | Listar itens do lab |
+| POST | /api/items | Criar item |
+| GET | /api/items/{id} | Detalhe de um item |
+| PUT | /api/items/{id} | Atualizar item |
+| DELETE | /api/items/{id} | Soft delete |
+
+> **Atenção:** o `ItemController` lê o claim `"lab"` do JWT para filtrar itens por lab. O `TokenService` ainda não emite esse claim — necessário antes de testar o CRUD de itens.
 
 ---
 
-**Status:** ✅ Pronto para Desenvolvimento  
-**Tempo:** 5 minutos
+## Próximos passos para desenvolvimento
+
+1. Adicionar claim `"lab"` ao `TokenService`
+2. Registar novos `IRepository<T>` no `Program.cs`
+3. Criar controllers restantes (Lab, Calibration, Certificate…)
+
+Veja [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) para lista completa.
+
+---
+
+## Links rápidos
+
+| Documento | Propósito |
+|---|---|
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Visão geral da arquitetura e entidades |
+| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Padrões de código e comandos |
+| [Diagrams.md](./Diagrams.md) | ERD e fluxos de dados |
+| [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) | Status e próximas tarefas |
+| [TESTING.md](./TESTING.md) | Guia de testes |
+
+---
+
+**Atualizado:** 2026-05-16

@@ -1,530 +1,243 @@
-# 📋 Documentação da Solução MetroSolAPI
+# MetroSolAPI — Architecture
 
-> **Última atualização:** $(date)  
-> **Versão:** 1.0  
-> **Framework:** .NET 10
-
-## 📑 Índice
-- [Visão Geral da Arquitetura](#visão-geral-da-arquitetura)
-- [Estrutura dos Projetos](#-estrutura-dos-projetos)
-- [Entidades e Relacionamentos](#-entidades-e-relacionamentos)
-- [Padrões Implementados](#-padrões-implementados)
-- [Stack Tecnológico](#-stack-tecnológico)
-- [Próximas Etapas](#-próximas-etapas-sugeridas)
+> **Versão:** 1.2 | **Stack:** .NET 10 · C# 13 · EF Core · SQL Server | **Atualizado:** 2026-05-16
 
 ---
 
-## 🏗️ Visão Geral da Arquitetura
+## Visão Geral
 
-A solução **MetroSolAPI** foi estruturada em **3 projetos principais** seguindo o padrão de arquitetura em camadas:
+MetroSol é uma plataforma de gestão de calibrações metrológicas multi-tenant. A API segue arquitetura em camadas (Core → Infrastructure → API) sem service layer explícita — o Repository Pattern é chamado diretamente nos controllers enquanto a lógica de negócio é simples o suficiente para isso.
 
 ```
 MetroSolAPI/
-├── MetroSol.Core/              (Camada de Domínio)
-├── MetroSol.Infrastructure/    (Camada de Dados)
-└── MetroSol.API/               (Camada de Apresentação)
+├── MetroSol.Core/           ← Domínio: entidades, enums, interfaces
+├── MetroSol.Infrastructure/ ← Dados: DbContext, Repository<T>
+├── MetroSolAPI/             ← Apresentação: Controllers, DTOs
+└── MetroSol.Tests/          ← Testes unitários (xUnit)
 ```
-
-### Princípios Arquitetônicos
-- ✅ Separation of Concerns (SoC)
-- ✅ Dependency Inversion Principle (DIP)
-- ✅ Repository Pattern
-- ✅ Soft Delete
-- ✅ Auditoria de Dados
 
 ---
 
-## 📦 Estrutura dos Projetos
+## 1. Camada de Domínio — MetroSol.Core
 
-### 1. **MetroSol.Core** (Camada de Domínio)
+### 1.1 BaseEntity
 
-**Localização:** `../MetroSol-Core/`
-
-**Responsabilidade:** Definir entidades, interfaces e lógica de negócio independente de framework
-
-**Estrutura:**
-```
-MetroSol.Core/
-├── Entities/
-│   ├── BaseEntity.cs
-│   ├── Item.cs                      # ✅ Equipamento (antes Equipment)
-│   ├── CalibrationCertificate.cs
-│   ├── User.cs
-│   └── Organization.cs
-├── Enums/
-│   ├── CertificateStatus.cs
-│   └── UserRole.cs
-├── Interfaces/
-│   ├── IRepository.cs
-│   └── ICertificateRepository.cs
-└── MetroSol.Core.csproj
-```
-
-**Objetivo:** Manter a lógica de negócio independente de qualquer framework ou tecnologia específica.
-
----
-
-### 2. **MetroSol.Infrastructure** (Camada de Dados)
-
-**Localização:** `../MetroSol.Infrastructure/`
-
-**Responsabilidade:** Implementação de acesso a dados, persistência e configurações de EF Core
-
-**Estrutura:**
-```
-MetroSol.Infrastructure/
-├── Data/
-│   ├── MetroSolDbContext.cs
-│   ├── Configurations/
-│   │   ├── ItemConfiguration.cs           # ✅ Equipamento
-│   │   ├── CalibrationCertificateConfiguration.cs
-│   │   ├── UserConfiguration.cs
-│   │   └── OrganizationConfiguration.cs
-│   └── Migrations/
-├── Repositories/
-│   ├── Repository.cs (genérico)
-│   └── CertificateRepository.cs
-└── MetroSol.Infrastructure.csproj
-```
-
-**Objetivo:** Centralizar toda a lógica de acesso a dados e configuração do EF Core.
-
----
-
-### 3. **MetroSol.API** (Camada de Apresentação)
-
-**Localização:** `./MetroSol.API/`
-
-**Responsabilidade:** Endpoints REST, DTOs e configuração da aplicação
-
-**Estrutura:**
-```
-MetroSol.API/
-├── Controllers/
-│   ├── ItemController.cs              # ✅ Equipamento
-│   ├── CalibrationCertificateController.cs
-│   └── ...
-├── DTOs/
-│   ├── ItemDto.cs                     # ✅ Equipamento
-│   ├── CalibrationCertificateDto.cs
-│   └── ...
-├── Program.cs
-└── MetroSol.API.csproj
-```
-
-**Objetivo:** Fornecer uma API REST segura e bem documentada.
-
----
-
-## 🗂️ Entidades e Relacionamentos
-
-### **BaseEntity** (Classe Base Abstrata)
-
-Classe base para todas as entidades, fornecendo propriedades comuns de auditoria.
+Classe base de todas as entidades. Fornece Id sequencial (SQL Server `newsequentialid()`), timestamps UTC e soft delete.
 
 ```csharp
-namespace MetroSol.Core.Entities
+public abstract class BaseEntity
 {
-	public abstract class BaseEntity
-	{
-		public Guid Id { get; set; } = Guid.NewGuid();
-		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-		public DateTime? UpdatedAt { get; set; }
-		public bool IsDeleted { get; set; } = false;
-	}
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
 }
 ```
 
-**Propriedades:**
-- `Id`: Guid único, gerado automaticamente
-- `CreatedAt`: Data/hora de criação (UTC)
-- `UpdatedAt`: Data/hora da última modificação (nullable)
-- `IsDeleted`: Flag para soft delete
+### 1.2 Entidades
 
----
+O modelo segue o ERD completo da documentação do produto (`MetroSol-Documentation/index.html`). Hierarquia de multi-tenancy: **Organization → Lab → (Users, Items, ReferenceStandards, Calibrations)**.
 
-### **Item** ⚙️
+#### Tenant & Acesso
 
-Representa um equipamento que necessita calibração.
+| Entidade | Descrição | FKs Principais |
+|---|---|---|
+| `Organization` | Empresa/laboratório contratante | — |
+| `Lab` | Unidade de calibração dentro de uma org | OrganizationId |
+| `User` | Usuário do sistema (qualquer role) | OrganizationId, LabId |
+| `CustomerLabAccess` | Acesso de um cliente a um ou mais labs | UserId, LabId |
 
-**Arquivo:** `../MetroSol.Core/Entities/Item.cs`
+#### Instrumentos
 
-```csharp
-public class Item : BaseEntity
-{
-	public string Tag { get; set; } = string.Empty;
-	public string Description { get; set; } = string.Empty;
-	public string Manufacturer { get; set; } = string.Empty;
-	public string Model { get; set; } = string.Empty;
-	public string SerialNumber { get; set; } = string.Empty;
-	public string CalibrationIntervalMonths { get; set; } = string.Empty;
-	public string LastCalibration { get; set; } = string.Empty;
-	public Guid OrganizationId { get; set; }
-	public required Organization Organization { get; set; }
-}
-```
+| Entidade | Descrição | FKs Principais |
+|---|---|---|
+| `ItemType` | Tipo de instrumento (termômetro, manômetro…) | — |
+| `Item` | Instrumento físico a ser calibrado | LabId, ItemTypeId |
 
-**Propriedades:**
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| Id | Guid | Identificador único (herdado) |
-| Tag | string | Identificador/etiqueta do equipamento |
-| Description | string | Descrição ou nome do equipamento |
-| Manufacturer | string | Nome do fabricante |
-| Model | string | Modelo do equipamento |
-| SerialNumber | string | Número de série |
-| CalibrationIntervalMonths | string | Intervalo de calibração em meses |
-| LastCalibration | string | Data da última calibração |
-| OrganizationId | Guid | FK para Organization |
-| Organization | Organization | Navegação para Organization (required) |
+#### Padrões & Rastreabilidade
 
-**Relacionamentos:**
-- `1:N` com `CalibrationCertificate` (um equipamento pode ter múltiplos certificados)
-- `N:1` com `Organization` (muitos equipamentos para uma organização)
+| Entidade | Descrição | FKs Principais |
+|---|---|---|
+| `ReferenceStandard` | Padrão de referência do lab | LabId |
+| `StandardCertificate` | Certificado de um padrão; auto-referência para cadeia de rastreabilidade | ReferenceStandardId, ParentCertificateId? |
 
----
+#### Calibração
 
-### **CalibrationCertificate** 📜
+| Entidade | Descrição | FKs Principais |
+|---|---|---|
+| `CalibrationMethod` | Definição do método; auto-referência para versionamento | ParentMethodId? |
+| `Calibration` | Execução de uma calibração | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? |
+| `CalibrationPoint` | Ponto de medição individual | CalibrationId |
 
-Representa um certificado de calibração de um equipamento.
+#### Emissão & Faturamento
 
-**Arquivo:** `../MetroSol.Core/Entities/CalibrationCertificate.cs`
+| Entidade | Descrição | FKs Principais |
+|---|---|---|
+| `Certificate` | Certificado formal emitido após aprovação (1-to-1 com Calibration) | CalibrationId |
+| `BillingEvent` | Evento de cobrança por emissão oficial | CertificateId, OrganizationId |
+| `AuditLog` | Trilha imutável de mudanças de estado | UserId, CalibrationId? |
 
-```csharp
-public class CalibrationCertificate : BaseEntity
-{
-	public string CertificateNumber { get; set; } = string.Empty;
-	public Guid ItemId { get; set; }
-	public Item? Item { get; set; }
-	public Guid PerformedById { get; set; }
-	public User? PerformedBy { get; set; }
-	public Guid SignedById { get; set; }
-	public User? SignedBy { get; set; }
-	public DateTime CalibrationDate { get; set; }
-	public DateTime DueDate { get; set; }
-	public CertificateStatus Status { get; set; } = CertificateStatus.Draft;
-	public string CalibrationDataJson { get; set; } = string.Empty;
-}
-```
+> `CalibrationCertificate` é um stub legado mantido por compatibilidade. Será removido quando os controllers de Calibração e Certificate estiverem prontos.
 
-**Propriedades:**
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| Id | Guid | Identificador único (herdado) |
-| CertificateNumber | string | Número único do certificado |
-| ItemId | Guid | FK → Item (equipamento) |
-| Item | Item? | Navegação para Item |
-| PerformedById | Guid | FK → User (técnico) |
-| PerformedBy | User? | Navegação para User (quem realizou) |
-| SignedById | Guid | FK → User (assinante) |
-| SignedBy | User? | Navegação para User (quem assinou) |
-| CalibrationDate | DateTime | Data da calibração |
-| DueDate | DateTime | Data de vencimento do certificado |
-| Status | CertificateStatus | Status do certificado |
-| CalibrationDataJson | string | Dados técnicos em formato JSON |
+### 1.3 Enums
 
-**Status Disponíveis (CertificateStatus Enum):**
-```csharp
-public enum CertificateStatus
-{
-	Draft = 0,           // Rascunho
-	Pending = 1,         // Pendente de aprovação
-	Approved = 2,        // Aprovado
-	Rejected = 3         // Rejeitado
-}
-```
+| Enum | Valores |
+|---|---|
+| `UserRole` | Admin=1, Manager=2, Technician=3, Customer=4 |
+| `CertificateStatus` | Draft=1, PendingReview=2, Official=3, Voided=4, InHomologation=5, Revoked=6 |
+| `ItemStatus` | Active=1, UnderCalibration=2, OutOfService=3, Retired=4 |
+| `CalibrationStatus` | Draft=1, Submitted=2, Approved=3, Rejected=4 |
+| `CalibrationMethodStatus` | Homologating=1, Official=2, Deprecated=3 |
+| `ConformityResult` | Pass=1, Fail=2, Conditional=3 |
+| `InputSource` | Manual=1, IoT=2, CsvImport=3 |
+| `BillingEventType` | OfficialIssuance=1, SubscriptionCharge=2, Refund=3 |
 
-**Relacionamentos:**
-- `N:1` com `Item` (muitos certificados para um equipamento)
-- `N:1` com `User` (PerformedBy - técnico que realizou)
-- `N:1` com `User` (SignedBy - assinante autorizado)
-
----
-
-### **User** 👤
-
-Representa um usuário do sistema (técnico, assinante, admin).
-
-**Arquivo:** `../MetroSol-Core/Entities/User.cs`
+### 1.4 Interfaces
 
 ```csharp
-public class User : BaseEntity
-{
-	public string Name { get; set; } = string.Empty;
-	public string Email { get; set; } = string.Empty;
-	public string Role { get; set; } = string.Empty;
-	public Guid OrganizationId { get; set; }
-	public Organization? Organization { get; set; }
-}
-```
-
-**Propriedades:**
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| Id | Guid | Identificador único (herdado) |
-| Name | string | Nome completo do usuário |
-| Email | string | Email único do usuário |
-| Role | string | Papel/função (técnico, validador, admin, etc) |
-| OrganizationId | Guid | FK para Organization |
-
-**Papéis Suportados:**
-- `Technician` - Técnico de calibração
-- `Validator` - Validador/Assinante
-- `Admin` - Administrador da organização
-- `SuperAdmin` - Administrador do sistema
-
-**Relacionamentos:**
-- `N:1` com `Organization`
-- `1:N` com `CalibrationCertificate` (como PerformedBy)
-- `1:N` com `CalibrationCertificate` (como SignedBy)
-
----
-
-### **Organization** 🏢
-
-Representa a organização/empresa que utiliza o sistema.
-
-**Arquivo:** `../MetroSol.Core/Entities/Organization.cs`
-
-```csharp
-public class Organization : BaseEntity
-{
-	public string Name { get; set; } = string.Empty;
-	public string Country { get; set; } = string.Empty;
-	public string City { get; set; } = string.Empty;
-	public string State { get; set; } = string.Empty;
-	public string Street { get; set; } = string.Empty;
-	public string BuildingNumber { get; set; } = string.Empty;
-	public string Complement { get; set; } = string.Empty;
-	public string PostalCode { get; set; } = string.Empty;
-	public string Timezone { get; set; } = string.Empty;
-	public string ContactEmail { get; set; } = string.Empty;
-}
-```
-
-**Propriedades:**
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| Id | Guid | Identificador único (herdado) |
-| Name | string | Nome da organização |
-| Country | string | País |
-| City | string | Cidade |
-| State | string | Estado/Província |
-| Street | string | Rua |
-| BuildingNumber | string | Número do prédio |
-| Complement | string | Complemento do endereço |
-| PostalCode | string | CEP/Código postal |
-| Timezone | string | Fuso horário |
-| ContactEmail | string | Email de contato |
-
-**Relacionamentos:**
-- `1:N` com `Item` (uma organização tem múltiplos equipamentos)
-- `1:N` com `User` (uma organização tem múltiplos usuários)
-
----
-
-## 🔄 Diagrama de Relacionamentos
-
-```
-┌──────────────────┐
-│  ORGANIZATION    │
-├──────────────────┤
-│ Id (PK)          │
-│ Name             │
-│ Country          │
-│ City             │
-│ State            │
-│ Street           │
-│ BuildingNumber   │
-│ Complement       │
-│ PostalCode       │
-│ Timezone         │
-│ ContactEmail     │
-│ CreatedAt        │
-│ UpdatedAt        │
-│ IsDeleted        │
-└────────┬─────────┘
-		 │
-		 ├─────────────────┬──────────────────┐
-		 │                 │                  │
-		 ▼ 1:N             ▼ 1:N              │
-┌──────────────────┐  ┌──────────────────┐   │
-│      ITEM        │  │      USER        │   │
-├──────────────────┤  ├──────────────────┤   │
-│ Id (PK)          │  │ Id (PK)          │   │
-│ Tag              │  │ Name             │   │
-│ Description      │  │ Email            │   │
-│ Manufacturer     │  │ Role             │   │
-│ Model            │  │ OrganizationId   ◄───┘ FK
-│ SerialNumber     │  │ CreatedAt        │
-│ CalibrInterval   │  │ UpdatedAt        │
-│ LastCalibration  │  │ IsDeleted        │
-│ OrganizationId ◄─┼──┤ FK               │
-│ CreatedAt        │  │                  │
-│ UpdatedAt        │  │                  │
-│ IsDeleted        │  │                  │
-└────────┬─────────┘  └──────────────────┘
-		 │
-		 │ 1:N
-		 ▼
-┌──────────────────────────────────────────┐
-│   CALIBRATION_CERTIFICATE               │
-├──────────────────────────────────────────┤
-│ Id (PK)                                  │
-│ CertificateNumber                        │
-│ ItemId (FK)         ──────────┐         │
-│ PerformedById (FK)  ───────────┼──┐     │
-│ SignedById (FK)     ───────────┼──┼──┐  │
-│ CalibrationDate                │  │  │  │
-│ DueDate                        │  │  │  │
-│ Status                         │  │  │  │
-│ CalibrationDataJson            │  │  │  │
-│ CreatedAt                      │  │  │  │
-│ UpdatedAt                      │  │  │  │
-│ IsDeleted                      │  │  │  │
-└──────────────────────────────────────────┘
-	   ▲                        │  │  │
-	   │                        │  │  │
-	   └────────────────────────┘  │  │
-		   N:1 (has)               │  │
-								   │  │
-	   ┌───────────────────────────┘  │
-	   │                              │
-	   ▼ N:1 (PerformedBy)            │
-	   ▼ N:1 (SignedBy)               ▼
-```
-
----
-
-## ✅ Padrões Implementados
-
-### 1. **Soft Delete**
-```csharp
-// Dados nunca são realmente deletados, apenas marcados
-public bool IsDeleted { get; set; } = false;
-
-// Ao consultar, sempre filtrar IsDeleted == false
-// SELECT * FROM Equipment WHERE IsDeleted = 0
-```
-
-**Benefícios:**
-- ✅ Recuperação de dados acidentalmente deletados
-- ✅ Auditoria completa
-- ✅ Referência histórica
-
----
-
-### 2. **Auditoria de Dados**
-```csharp
-public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-public DateTime? UpdatedAt { get; set; }
-```
-
-**Benefícios:**
-- ✅ Rastreamento completo de mudanças
-- ✅ Histórico de modificações
-- ✅ Conformidade com regulamentações
-
----
-
-### 3. **Hierarquia de Entidades**
-```csharp
-public class Equipment : BaseEntity { }
-public class CalibrationCertificate : BaseEntity { }
-```
-
-**Benefícios:**
-- ✅ DRY (Don't Repeat Yourself)
-- ✅ Herança automática de propriedades
-- ✅ Polimorfismo no banco de dados
-
----
-
-### 4. **Repository Pattern**
-```csharp
+// MetroSol.Core/Interfaces/IRepository.cs
 public interface IRepository<T> where T : BaseEntity
 {
-	Task<T?> GetByIdAsync(Guid id);
-	Task<IEnumerable<T>> GetAllAsync();
-	Task AddAsync(T entity);
-	Task UpdateAsync(T entity);
-	Task DeleteAsync(Guid id);
+    Task<T?> GetByIdAsync(Guid id);
+    Task<IEnumerable<T>> GetAllAsync();
+    Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+    Task AddAsync(T entity);
+    void Update(T entity);
+    void Delete(T entity);
+    Task SaveChangesAsync();
 }
 ```
 
-**Benefícios:**
-- ✅ Abstração de dados
-- ✅ Testabilidade
-- ✅ Flexibilidade para trocar provedor
+---
+
+## 2. Camada de Dados — MetroSol.Infrastructure
+
+### 2.1 MetroSolDbContext
+
+Todos os 15 `DbSet`s estão registados. Destaques da configuração em `OnModelCreating`:
+
+- **`newsequentialid()`** como default SQL para todos os PKs (evita fragmentação de índice)
+- **QueryFilter global** `IsDeleted = false` em cada entidade — soft delete transparente
+- **Auto-referências** configuradas sem ciclo de cascade: `StandardCertificate.ParentCertificateId` e `CalibrationMethod.ParentMethodId`
+- **Dupla FK para User** em `Calibration` (TechnicianId + SupervisorId) com `OnDelete(Restrict)` em ambas
+- **1-to-1** `Certificate` ↔ `Calibration` via FK em `Certificate`
+- **Cascade** apenas em `CalibrationPoint → Calibration` (pontos não fazem sentido sem a calibração)
+- `BillingEvent.Amount` configurado com `HasPrecision(18, 4)`
+
+### 2.2 Repository\<T\>
+
+Repositório genérico implementa `IRepository<T>`. O QueryFilter do DbContext garante que registos com `IsDeleted = true` nunca aparecem nas queries.
 
 ---
 
-### 5. **Valores Padrão Seguros**
-```csharp
-// Ids gerados automaticamente
-public Guid Id { get; set; } = Guid.NewGuid();
+## 3. Camada de Apresentação — MetroSolAPI
 
-// Strings vazias em vez de null
-public string Tag { get; set; } = string.Empty;
+### 3.1 Controllers existentes
 
-// Status padrão
-public CertificateStatus Status { get; set; } = CertificateStatus.Draft;
+| Controller | Endpoints | Roles |
+|---|---|---|
+| `AuthController` | POST /auth/login, POST /auth/refresh, POST /auth/logout | public / all |
+| `ItemController` | GET+POST /items, GET+PUT+DELETE /items/{id} | all / Admin+Technician |
+
+### 3.2 JWT Claims
+
+| Claim | Valor | Usado por |
+|---|---|---|
+| `sub` | UserId (Guid) | Todos os controllers |
+| `org` | OrganizationId (Guid) | AuthController, filtros de org |
+| `lab` | LabId (Guid) | ItemController e futuros controllers de lab |
+| `role` | UserRole (string) | Autorização por role |
+
+> **Pendente:** o `TokenService` ainda não emite o claim `"lab"`. Necessário antes de testar o `ItemController`.
+
+### 3.3 DTOs
+
+```
+DTOs/
+├── Auth/        LoginDto, RegisterDto, AuthResponseDto
+├── Organization/ OrganizationDto, Create, Update
+├── User/         UserDto, Create, Update
+├── Item/         ItemDto, Create, Update       ← atualizado com campos ERD
+└── CalibrationCertificate/  (stub legado)
 ```
 
 ---
 
-## 💾 Stack Tecnológico
+## 4. Padrões de Código
 
-| Tecnologia | Versão | Propósito |
-|-----------|--------|----------|
-| **.NET** | 10 | Runtime/Framework |
-| **C#** | 13 | Linguagem |
-| **Entity Framework Core** | 10.x | ORM |
-| **SQL Server** | 2022+ | Banco de Dados |
-| **ASP.NET Core** | 10 | Web API |
+### Soft Delete
+```csharp
+// Nunca DELETE físico — sempre soft delete via Repository
+_repository.Delete(entity);          // seta IsDeleted = true
+await _repository.SaveChangesAsync();
+// QueryFilter global garante que IsDeleted = true nunca retorna em queries
+```
 
----
+### Multi-tenancy (isolamento por Lab)
+```csharp
+// Lê o LabId do claim JWT, filtra pelo lab do usuário
+var labId = Guid.Parse(User.FindFirstValue("lab")!);
+var items = await _items.FindAsync(i => i.LabId == labId);
+```
 
-## 🎯 Próximas Etapas Sugeridas
+### UpdateDto — patch-style
+```csharp
+// Apenas campos não-null são aplicados
+if (dto.Tag is not null) entity.Tag = dto.Tag;
+_repository.Update(entity);
+```
 
-### Alto Nível de Prioridade (MVP)
-- [ ] **Implementar User entity completa** - Necessária para autenticação
-- [ ] **Implementar Organization entity completa** - Isolamento de dados multi-tenant
-- [ ] **Criar DbContext** com mapeamentos EF Core
-- [ ] **Criar migrations iniciais**
-- [ ] **Implementar endpoints da API** para CRUD básico
+### Datas sempre UTC
+```csharp
+// ✅ Correto
+public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-### Médio Nível de Prioridade
-- [ ] **Implementar Repositórios genéricos** - Camada de abstração de dados
-- [ ] **Adicionar validações nas entidades** - FluentValidation
-- [ ] **Implementar autenticação/autorização**
-- [ ] **Criar DTOs** para API
-- [ ] **Adicionar logging**
-
-### Baixo Nível de Prioridade (Futura)
-- [ ] **Unit Tests** - Testes de repositórios e serviços
-- [ ] **Integration Tests** - Testes de API
-- [ ] **Documentação com Swagger/OpenAPI**
-- [ ] **Performance tunning**
-- [ ] **Implementar cache**
+// ❌ Errado
+public DateTime CreatedAt { get; set; } = DateTime.Now;
+```
 
 ---
 
-## 📝 Histórico de Alterações
+## 5. Modelo de Freemium — Homologação
 
-| Data | Versão | Alteração | Autor |
-|------|--------|-----------|-------|
-| 2024 | 1.0 | Documentação inicial com estrutura de entidades | Sistema |
+O campo `CalibrationMethod.IsHomologating = true` força o status `InHomologation` em todos os certificados produzidos por aquele método:
 
----
-
-## 🔗 Referências
-
-- [ASP.NET Core Documentation](https://docs.microsoft.com/aspnet/core)
-- [Entity Framework Core Documentation](https://docs.microsoft.com/ef/core)
-- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Repository Pattern](https://martinfowler.com/eaaCatalog/repository.html)
+- `Certificate.Status = InHomologation` → PDF bloqueado na API (HTTP 403)
+- Promoção do método para `Official` → todos os certificados associados são re-emitidos como `Official`
+- `BillingEvent` é criado apenas na emissão de certificados `Official`
 
 ---
 
-**Gerado automaticamente - Atualize este arquivo quando alterar estrutura de entidades**
+## 6. Tech Stack
+
+| Camada | Tecnologia |
+|---|---|
+| Runtime | .NET 10 |
+| Linguagem | C# 13 |
+| ORM | Entity Framework Core 10 |
+| Banco | SQL Server (local: 127.0.0.1:1433, DB: MetroSolDb) |
+| Auth | JWT (access 15 min + refresh 7 dias) |
+| Docs API | Scalar / OpenAPI |
+| Testes | xUnit + Moq |
+| Mobile (futuro) | Flutter |
+| Web (futuro) | Angular |
+
+---
+
+## 7. Próximos Passos
+
+1. Adicionar claim `"lab"` ao `TokenService`
+2. `dotnet ef migrations add FullERD` — aplicar novo schema
+3. Registar `IRepository<Lab>` e demais repositórios no DI (`Program.cs`)
+4. Controllers: `Lab`, `ItemType`, `ReferenceStandard`, `Calibration`, `Certificate`
+5. Remover `CalibrationCertificate` (stub legado)
+
+---
+
+**Changelog:**
+
+| Data | Versão | Alteração |
+|---|---|---|
+| 2026-05-16 | 1.2 | Geradas as 11 entidades restantes do ERD; DbContext configurado; ItemController atualizado |
+| 2026-05-15 | 1.1 | AuthController, DTOs, controllers base |
+| 2024 | 1.0 | Estrutura inicial (4 entidades) |

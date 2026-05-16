@@ -1,18 +1,18 @@
-# Setup Local
+# Local Setup
 
 
-1. Copie o template de configuração:
+1. Copy the configuration template:
 
 ```powershell
 Copy-Item appsettings.json.example appsettings.json
 ```
 
-2. Use `dotnet user-secrets` para armazenar credenciais locais:
+2. Use `dotnet user-secrets` to store local credentials:
 
 ```powershell
 dotnet user-secrets init -p MetroSol.API
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=MetroSolAPI;..."
-dotnet user-secrets set "Jwt:Secret" "seu-secret-aqui"
+dotnet user-secrets set "Jwt:Secret" "your-secret-here"
 ```
 
-3. Alternativa: crie `appsettings.local.json` (não versionado) para valores locais.
+3. Alternative: create `appsettings.local.json` (not versioned) for local values.

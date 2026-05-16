@@ -1,476 +1,261 @@
-# ⚡ Quick Reference - MetroSolAPI
+# Quick Reference — MetroSolAPI
 
-> Guia rápido para desenvolvedores - Referência de estrutura e padrões
-
----
-
-## 📚 Índice Rápido
-
-- [Estrutura de Projetos](#estrutura-de-projetos)
-- [Entidades](#entidades)
-- [Padrões de Código](#padrões-de-código)
-- [Comandos Úteis](#comandos-úteis)
-- [🆕 Comandos de Testes](#-comandos-de-testes)
-- [Troubleshooting](#troubleshooting)
+> Guia rápido de desenvolvimento. Atualizado: 2026-05-16
 
 ---
 
-## 📁 Estrutura de Projetos
+## Estrutura de Arquivos
 
 ```
 MetroSolAPI/
-├── MetroSol.Core/                        # Camada de Domínio
+│
+├── MetroSol.Core/
 │   ├── Entities/
-│   │   ├── BaseEntity.cs                 ← Classe base para todas as entidades
-│   │   ├── Item.cs                       ← Equipamento para calibrar ✅
-│   │   ├── CalibrationCertificate.cs     ← Certificado de calibração ✅
-│   │   ├── User.cs                       ← Usuário do sistema ✅
-│   │   └── Organization.cs               ← Organização ✅
+│   │   ├── BaseEntity.cs               ← base de todas as entidades
+│   │   ├── Organization.cs             ✅
+│   │   ├── Lab.cs                      ✅
+│   │   ├── User.cs                     ✅
+│   │   ├── CustomerLabAccess.cs        ✅
+│   │   ├── ItemType.cs                 ✅
+│   │   ├── Item.cs                     ✅
+│   │   ├── ReferenceStandard.cs        ✅
+│   │   ├── StandardCertificate.cs      ✅
+│   │   ├── CalibrationMethod.cs        ✅
+│   │   ├── Calibration.cs              ✅
+│   │   ├── CalibrationPoint.cs         ✅
+│   │   ├── Certificate.cs              ✅
+│   │   ├── BillingEvent.cs             ✅
+│   │   ├── AuditLog.cs                 ✅
+│   │   └── CalibrationCertificate.cs   ⚠️  stub legado — remover em breve
 │   ├── Enums/
-│   │   ├── CertificateStatus.cs          ← Draft, Pending, Approved, Rejected ✅
-│   │   └── UserRole.cs                   ← Roles de usuário ✅
+│   │   ├── UserRole.cs                 ✅
+│   │   ├── CertificateStatus.cs        ✅
+│   │   ├── ItemStatus.cs               ✅
+│   │   ├── CalibrationStatus.cs        ✅
+│   │   ├── CalibrationMethodStatus.cs  ✅
+│   │   ├── ConformityResult.cs         ✅
+│   │   ├── InputSource.cs              ✅
+│   │   └── BillingEventType.cs         ✅
 │   └── Interfaces/
-│       ├── IRepository<T>.cs             ← Interface genérica ✅
-│       └── ICertificateRepository.cs     ← Especializações ✅
+│       ├── IRepository.cs              ✅
+│       └── ICertificateRepository.cs   ✅
 │
-├── MetroSol.Infrastructure/              # Camada de Dados
+├── MetroSol.Infrastructure/
 │   ├── Data/
-│   │   ├── MetroSolDbContext.cs          ← DbContext EF Core (EM ANDAMENTO)
-│   │   ├── Configurations/               ← Mapeamentos EF Core (EM ANDAMENTO)
-│   │   │   ├── ItemConfiguration.cs      ← Item config
-│   │   │   ├── CalibrationCertificateConfiguration.cs
-│   │   │   ├── UserConfiguration.cs
-│   │   │   └── OrganizationConfiguration.cs
-│   │   └── Migrations/                   ← Migrações EF Core
+│   │   └── MetroSolDbContext.cs        ✅  15 DbSets + relacionamentos
 │   └── Repositories/
-│       ├── Repository<T>.cs              ← Repositório genérico (EM ANDAMENTO)
-│       └── CertificateRepository.cs      ← Especializações (EM ANDAMENTO)
+│       └── Repository.cs               ✅  genérico com soft-delete
 │
-├── MetroSol.API/                         # Camada de Apresentação
-│   ├── Controllers/                      ← Endpoints REST (PENDENTE)
-│   ├── DTOs/                             ← Data Transfer Objects (PENDENTE)
-│   ├── Program.cs                        ← Configuração (BÁSICO)
-│   └── appsettings.json                  ← Configurações
+├── MetroSolAPI/
+│   ├── Controllers/
+│   │   ├── AuthController.cs           ✅
+│   │   └── ItemController.cs           ✅
+│   ├── DTOs/
+│   │   ├── Auth/                       ✅
+│   │   ├── Organization/               ✅
+│   │   ├── User/                       ✅
+│   │   ├── Item/                       ✅  (atualizado)
+│   │   └── CalibrationCertificate/     ⚠️  legado
+│   ├── Services/
+│   │   └── TokenService.cs             ✅  (pendente: claim "lab")
+│   └── Program.cs                      ✅
 │
-└── MetroSol.Tests/                       # 🆕 Testes Unitários
-	├── ItemEntityTests.cs               ← Testes de entidade ✅
-	├── RepositoryTests.cs               ← Testes com Mock ✅
-	├── AssertionExamplesTests.cs        ← Exemplos de Assert ✅
-	├── TesteTemplate.cs                 ← Template para novos testes
-	├── GUIA_TESTES_UNITARIOS.md         ← Guia completo em português
-	└── README.md                        ← Resumo de testes
-
-✅ = Criado
-⏳ = Em Andamento
-PENDENTE = Próximo passo
+└── MetroSol.Tests/                     ✅  21 testes passando
 ```
 
 ---
 
-## 🗂️ Entidades - Referência Rápida
+## Enums
 
-### BaseEntity (Classe Base)
 ```csharp
-// Todas as entidades herdam desta classe
-public abstract class BaseEntity
+// UserRole
+Admin = 1, Manager = 2, Technician = 3, Customer = 4
+
+// CertificateStatus
+Draft = 1, PendingReview = 2, Official = 3, Voided = 4, InHomologation = 5, Revoked = 6
+
+// ItemStatus
+Active = 1, UnderCalibration = 2, OutOfService = 3, Retired = 4
+
+// CalibrationStatus
+Draft = 1, Submitted = 2, Approved = 3, Rejected = 4
+
+// CalibrationMethodStatus
+Homologating = 1, Official = 2, Deprecated = 3
+
+// ConformityResult
+Pass = 1, Fail = 2, Conditional = 3
+
+// InputSource
+Manual = 1, IoT = 2, CsvImport = 3
+
+// BillingEventType
+OfficialIssuance = 1, SubscriptionCharge = 2, Refund = 3
+```
+
+---
+
+## FKs Principais
+
+| Entidade | FK(s) | Obrigatório |
+|---|---|---|
+| `Lab` | OrganizationId | Sim |
+| `User` | OrganizationId, LabId | Não (nullable) |
+| `CustomerLabAccess` | UserId, LabId | Sim |
+| `Item` | LabId, ItemTypeId | Sim |
+| `ReferenceStandard` | LabId | Sim |
+| `StandardCertificate` | ReferenceStandardId, ParentCertificateId? | Parcial |
+| `CalibrationMethod` | ParentMethodId? | Não |
+| `Calibration` | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? | Parcial |
+| `CalibrationPoint` | CalibrationId | Sim |
+| `Certificate` | CalibrationId (1-to-1) | Sim |
+| `BillingEvent` | CertificateId, OrganizationId | Sim |
+| `AuditLog` | UserId, CalibrationId? | Parcial |
+
+---
+
+## Padrões de Código
+
+### Entidade nova
+```csharp
+namespace MetroSol.Core.Entities
 {
-	public Guid Id { get; set; } = Guid.NewGuid();              // ✓ Auto-gerado
-	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // ✓ UTC sempre
-	public DateTime? UpdatedAt { get; set; }                    // ✓ Nullable
-	public bool IsDeleted { get; set; } = false;                // ✓ Soft delete
+    public class MinhaEntidade : BaseEntity
+    {
+        public Guid FkId { get; set; }
+        public OutraEntidade? OutraEntidade { get; set; }
+        public string Campo { get; set; } = string.Empty;  // nunca null
+    }
 }
 ```
 
-### Equipment ⚙️ → **Item** (Nome Atual)
+### Controller — padrão multi-tenant por Lab
 ```csharp
-public class Item : BaseEntity
-{
-	public string Tag { get; set; }                    // Identificador único
-	public string Description { get; set; }            // Nome/descrição
-	public string Manufacturer { get; set; }           // Fabricante
-	public string Model { get; set; }                  // Modelo
-	public string SerialNumber { get; set; }           // Número de série
-	public string CalibrationIntervalMonths { get; set; } // Intervalo (meses)
-	public string LastCalibration { get; set; }        // Última calibração
-	public Guid OrganizationId { get; set; }           // FK → Organization
-	public required Organization Organization { get; set; } // Navegação (obrigatória)
-}
+private Guid? GetLabId() =>
+    User.FindFirstValue("lab") is string s ? Guid.Parse(s) : null;
+
+private static ObjectResult NoLabResult() =>
+    new ObjectResult(new { message = "User is not linked to any lab." })
+        { StatusCode = 403 };
+
+// No endpoint:
+var labId = GetLabId();
+if (labId is null) return NoLabResult();
+var itens = await _repo.FindAsync(x => x.LabId == labId.Value);
 ```
 
-### CalibrationCertificate 📜
+### UpdateDto — patch-style (apenas campos não-null)
 ```csharp
-public class CalibrationCertificate : BaseEntity
-{
-	public string CertificateNumber { get; set; }      // Número único
-	public Guid ItemId { get; set; }                   // FK → Item ✅
-	public Item? Item { get; set; }                    // Navegação
-	public Guid PerformedById { get; set; }            // FK → User (técnico)
-	public User? PerformedBy { get; set; }             // Navegação
-	public Guid SignedById { get; set; }               // FK → User (assinante)
-	public User? SignedBy { get; set; }                // Navegação
-	public DateTime CalibrationDate { get; set; }      // Data da calibração
-	public DateTime DueDate { get; set; }              // Data de vencimento
-	public CertificateStatus Status { get; set; }      // Draft|Pending|Approved|Rejected
-	public string CalibrationDataJson { get; set; }    // Dados técnicos (JSON)
-}
+if (dto.Campo is not null) entity.Campo = dto.Campo;
+_repo.Update(entity);
+await _repo.SaveChangesAsync();
 ```
 
-### User 👤 (CRIAR)
+### Soft delete
 ```csharp
-public class User : BaseEntity
-{
-	public string Name { get; set; }                   // Nome completo
-	public string Email { get; set; }                  // Email único
-	public string Role { get; set; }                   // Technician|Validator|Admin|SuperAdmin
-	public Guid OrganizationId { get; set; }           // FK → Organization
-	public Organization? Organization { get; set; }    // Navegação
-}
+_repo.Delete(entity);          // seta IsDeleted = true
+await _repo.SaveChangesAsync();
+// QueryFilter global garante que IsDeleted = true nunca aparece em queries
 ```
 
-### Organization 🏢 (Atualizado)
+### Datas sempre UTC
 ```csharp
-public class Organization : BaseEntity
-{
-	public string Name { get; set; }                   // Nome da empresa
-	public string Country { get; set; }                // País
-	public string City { get; set; }                   // Cidade
-	public string State { get; set; }                  // Estado
-	public string Street { get; set; }                 // Rua
-	public string BuildingNumber { get; set; }         // Número
-	public string Complement { get; set; }             // Complemento
-	public string PostalCode { get; set; }             // CEP
-	public string Timezone { get; set; }               // Fuso horário
-	public string ContactEmail { get; set; }           // Email de contato
-}
+public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // ✅
+public DateTime CreatedAt { get; set; } = DateTime.Now;      // ❌
 ```
 
 ---
 
-## 🔧 Padrões de Código
+## Comandos
 
-### 1️⃣ Sempre Usar Guid para IDs
-```csharp
-// ✅ CORRETO
-public Guid Id { get; set; } = Guid.NewGuid();
-
-// ❌ ERRADO
-public int Id { get; set; }
-```
-
-### 2️⃣ Sempre Usar DateTime.UtcNow
-```csharp
-// ✅ CORRETO
-public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-// ❌ ERRADO
-public DateTime CreatedAt { get; set; } = DateTime.Now;
-```
-
-### 3️⃣ Strings Vazias, Nunca Null
-```csharp
-// ✅ CORRETO
-public string Tag { get; set; } = string.Empty;
-
-// ❌ ERRADO
-public string Tag { get; set; } = null!;
-```
-
-### 4️⃣ Foreign Keys Sempre em Maiúscula
-```csharp
-// ✅ CORRETO
-public Guid EquipmentId { get; set; }
-
-// ❌ ERRADO
-public Guid equipmentId { get; set; }
-```
-
-### 5️⃣ Propriedades de Navegação com "?"
-```csharp
-// ✅ CORRETO
-public Equipment? Equipment { get; set; }
-public User? PerformedBy { get; set; }
-
-// ❌ ERRADO
-public Equipment Equipment { get; set; }
-```
-
-### 6️⃣ Soft Delete em Todas as Queries
-```csharp
-// ✅ CORRETO - Sempre filtrar IsDeleted
-var items = await _context.Item
-	.Where(e => !e.IsDeleted)
-	.ToListAsync();
-
-// ❌ ERRADO - Sem filtro de IsDeleted
-var items = await _context.Item.ToListAsync();
-```
-
-### 7️⃣ Repository Pattern
-```csharp
-// ✅ CORRETO - Usar repositório
-var item = await _itemRepository.GetByIdAsync(id);
-
-// ❌ ERRADO - Acessar DbContext direto
-var item = await _context.Item.FindAsync(id);
-```
-
----
-
-## 📋 Relacionamentos Rápidos
-
-```
-Organization
-	├── 1:N Item              (org tem muitos equipamentos)
-	└── 1:N User             (org tem muitos usuários)
-
-Item
-	├── N:1 Organization     (item pertence a uma org)
-	└── 1:N CalibrationCertificate (item tem muitos certificados)
-
-User
-	├── N:1 Organization     (user pertence a uma org)
-	├── 1:N CalibrationCertificate (como PerformedBy)
-	└── 1:N CalibrationCertificate (como SignedBy)
-
-CalibrationCertificate
-	├── N:1 Item             (cert pertence a um item)
-	├── N:1 User (PerformedBy)
-	└── N:1 User (SignedBy)
-```
-
----
-
-## 🎯 Enums
-
-### CertificateStatus
-```csharp
-public enum CertificateStatus
-{
-	Draft = 0,      // Rascunho
-	Pending = 1,    // Pendente de aprovação
-	Approved = 2,   // Aprovado
-	Rejected = 3    // Rejeitado
-}
-```
-
-**Exemplo de uso:**
-```csharp
-var certificate = new CalibrationCertificate
-{
-	Status = CertificateStatus.Draft  // Começa como rascunho
-};
-```
-
----
-
-## 🔑 Chaves Estrangeiras (Foreign Keys)
-
-| Tabela | FK | Referencia | Obrigatório |
-|--------|----|-----------| ------------|
-| Item | OrganizationId | Organization.Id | Sim |
-| CalibrationCertificate | ItemId | Item.Id | Sim |
-| CalibrationCertificate | PerformedById | User.Id | Sim |
-| CalibrationCertificate | SignedById | User.Id | Sim |
-| User | OrganizationId | Organization.Id | Sim |
-
----
-
-## 🗃️ Índices Recomendados
-
-```sql
--- Item
-CREATE UNIQUE INDEX UX_Item_Tag_Organization 
-	ON Item(Tag, OrganizationId);
-CREATE INDEX IX_Item_Organization 
-	ON Item(OrganizationId);
-
--- CalibrationCertificate
-CREATE UNIQUE INDEX UX_CalibrationCertificate_Number 
-	ON CalibrationCertificate(CertificateNumber);
-CREATE INDEX IX_CalibrationCertificate_Item 
-	ON CalibrationCertificate(ItemId);
-CREATE INDEX IX_CalibrationCertificate_Status 
-	ON CalibrationCertificate(Status);
-CREATE INDEX IX_CalibrationCertificate_DueDate 
-	ON CalibrationCertificate(DueDate);
-
--- User
-CREATE UNIQUE INDEX UX_User_Email 
-	ON User(Email);
-CREATE INDEX IX_User_Organization 
-	ON User(OrganizationId);
-
--- Organization
-CREATE UNIQUE INDEX UX_Organization_ContactEmail 
-	ON Organization(ContactEmail);
-```
-
----
-
-## 💾 Comandos Úteis
-
-### 🧪 🆕 Testes Unitários
-
+### Build & Run
 ```powershell
-# Rodar todos os testes
-dotnet test -p MetroSol.Tests
-
-# Rodar com output detalhado
-dotnet test -p MetroSol.Tests --verbosity detailed
-
-# Rodar teste específico
-dotnet test -p MetroSol.Tests --filter "ClassName=ItemEntityTests"
-
-# Rodar e gerar relatório de cobertura
-dotnet test -p MetroSol.Tests /p:CollectCoverage=true
-
-# Watch mode (recompila e roda ao salvar)
-dotnet watch -p MetroSol.Tests test
+dotnet build                                              # build solução
+dotnet run --project MetroSolAPI                          # rodar API
+dotnet watch --project MetroSolAPI run                    # hot reload
 ```
 
-Veja [docs/TESTING.md](./TESTING.md) para guia completo! 🎯
+### Testes
+```powershell
+dotnet test                                               # todos os testes
+dotnet test --filter "ClassName=ItemEntityTests"          # filtrar classe
+dotnet test --verbosity detailed                          # saída detalhada
+dotnet watch --project MetroSol.Tests test               # watch mode
+```
 
 ### Entity Framework Core
-
 ```powershell
-# Criar nova migration
-dotnet ef migrations add InitialCreate -p MetroSol.Infrastructure -s MetroSol.API
+# Criar migration
+dotnet ef migrations add FullERD `
+  --project MetroSol.Infrastructure `
+  --startup-project MetroSolAPI
 
-# Aplicar migrations
-dotnet ef database update -p MetroSol.Infrastructure -s MetroSol.API
+# Aplicar migration
+dotnet ef database update `
+  --project MetroSol.Infrastructure `
+  --startup-project MetroSolAPI
 
-# Remover última migration (não aplicada)
-dotnet ef migrations remove -p MetroSol.Infrastructure -s MetroSol.API
+# Remover última migration (se não aplicada)
+dotnet ef migrations remove `
+  --project MetroSol.Infrastructure `
+  --startup-project MetroSolAPI
 
-# Gerar script SQL
-dotnet ef migrations script -p MetroSol.Infrastructure -s MetroSol.API
-
-# Ver migrations aplicadas
-dotnet ef migrations list -p MetroSol.Infrastructure -s MetroSol.API
-```
-
-### Build e Testes
-
-```powershell
-# Build solução
-dotnet build
-
-# Rodar testes
-dotnet test
-
-# Build específico
-dotnet build MetroSol.Core
-
-# Limpar
-dotnet clean
-```
-
-### Desenvolvimento
-
-```powershell
-# Rodar API
-dotnet run -p MetroSol.API
-
-# Watch mode (recompila ao salvar)
-dotnet watch -p MetroSol.API run
-
-# Ver estrutura de projeto
-dotnet sln list
+# Listar migrations aplicadas
+dotnet ef migrations list `
+  --project MetroSol.Infrastructure `
+  --startup-project MetroSolAPI
 ```
 
 ---
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
-### ❓ "DbContext not registered"
+### "DbContext not registered"
 ```csharp
-// Adicione no Program.cs:
-services.AddDbContext<MetroSolDbContext>(options =>
-	options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+// Program.cs — verificar se existe:
+builder.Services.AddDbContext<MetroSolDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 ```
 
-### ❓ "Foreign key constraint failed"
+### "Repository not registered"
 ```csharp
-// Verifique se o Organization/User existe antes de criar relacionado
-var item = new Item
+// Program.cs — registar para cada nova entidade:
+builder.Services.AddScoped<IRepository<Lab>, Repository<Lab>>();
+builder.Services.AddScoped<IRepository<Calibration>, Repository<Calibration>>();
+// ...
+```
+
+### "Claim 'lab' não encontrado — ItemController retorna 403"
+```
+TokenService ainda não emite o claim "lab".
+Adicionar LabId ao payload JWT no AuthController/TokenService.
+```
+
+### "Soft delete não funciona"
+```
+QueryFilter está configurado no DbContext para todas as entidades BaseEntity.
+Se uma query bypassa o DbContext (SQL raw), o filtro não se aplica.
+```
+
+### "Migration falhou — referência circular"
+```
+Configurar OnDelete(Restrict) em todas as auto-referências (ParentMethodId, ParentCertificateId).
+Já configurado no DbContext atual.
+```
+
+---
+
+## Conexão ao Banco
+
+```json
+// appsettings.local.json (não commitado)
 {
-	Tag = "EQ-001",
-	OrganizationId = organizationId,  // Este Guid deve existir
-	Organization = organization        // E Organization também é required
-};
-```
-
-### ❓ "Soft delete não funciona"
-```csharp
-// Sempre filtre IsDeleted nas queries:
-var active = _context.Item
-	.Where(e => !e.IsDeleted)  // ← NÃO ESQUEÇA!
-	.ToList();
-```
-
-### ❓ "Teste diz 'member required Organization must be defined'"
-```csharp
-// Item requer Organization (marked com 'required' keyword)
-var item = new Item 
-{ 
-	Tag = "TEST",
-	Organization = new Organization { Name = "Org" }  // ✅ Obrigatório
-};
-```
-
-### ❓ "Como criar um novo teste?"
-```
-1. Veja docs/TESTING.md para guia
-2. Copie TesteTemplate.cs como base
-3. Adapte para seu caso de uso
-4. Rode com: dotnet test
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=127.0.0.1,1433;Database=MetroSolDb;User Id=sa;Password=...;TrustServerCertificate=True"
+  }
+}
 ```
 
 ---
 
-## 📍 Fluxo Típico de Dados
-
-```
-1. Controller recebe HTTP Request
-	↓
-2. Valida DTOs e mapeia para Entities
-	↓
-3. Chama Repository.AddAsync(entity)
-	↓
-4. Repository salva em DbContext
-	↓
-5. DbContext executa migrations se necessário
-	↓
-6. SaveChangesAsync() persiste em SQL Server
-	↓
-7. Controller mapeia Entity para DTO Response
-	↓
-8. Retorna HTTP Response
-```
-
----
-
-## 📚 Referências de Arquivos
-
-| Arquivo | Localização | Status | Descrição |
-|---------|------------|--------|-----------|
-| BaseEntity.cs | MetroSol.Core/Entities/ | ✅ Criado | Classe base com audit |
-| Item.cs | MetroSol.Core/Entities/ | ✅ Criado | Entidade de equipamento |
-| CalibrationCertificate.cs | MetroSol.Core/Entities/ | ✅ Criado | Entidade de certificado |
-| CertificateStatus.cs | MetroSol.Core/Enums/ | ✅ Criado | Enum de status |
-| User.cs | MetroSol.Core/Entities/ | ✅ Criado | Entidade de usuário |
-| Organization.cs | MetroSol.Core/Entities/ | ✅ Criado | Entidade de organização |
-| MetroSolDbContext.cs | MetroSol.Infrastructure/Data/ | ⏳ EM ANDAMENTO | DbContext |
-
----
-
-## 📚 Referências de Documentação
-
-| Documento | Tipo | Tempo | Propósito |
-|-----------|------|-------|----------|
-| [INDEX.md](./INDEX.md) | 📖 Guia | 5 min | Visão geral dos documentos |
-| [GETTING_STARTED.md](./GETTING_STARTED.md) | ⚡ Quick Start | 10 min | Primeiros passos |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | 📋 Referência | 20 min | Entender arquitetura |
-| [TESTING.md](./TESTING.md) | 🧪 Guia | 15 min | Como fazer testes |
-| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | ⚡ Rápida | 10 min | Este arquivo |
-| [MetroSol.Tests/GUIA_TESTES_UNITARIOS.md](../MetroSol.Tests/GUIA_TESTES_UNITARIOS.md) | 📖 Completo | 30 min | Guia detalhado de testes |
+**Atualizado:** 2026-05-16
