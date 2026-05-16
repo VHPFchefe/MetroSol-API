@@ -1,0 +1,27 @@
+# Build outputs
+bin/
+obj/
+*.dll
+*.exe
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Dependencies
+packages/
+node_modules/
+
+# Secrets (IMPORTANTE!)
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+secrets.json
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db

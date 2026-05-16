@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../MetroSol-Core/MetroSol.Core.csproj" Id="def024a6-43db-4b0a-bf02-4ddb71ad9c74" />
+  <Project Path="../MetroSol.Infrastructure/MetroSol.Infrastructure.csproj" Id="5016ee8b-9d05-46ee-8d12-8c4254e31118" />
+  <Project Path="MetroSol.API.csproj" />
+</Solution>
