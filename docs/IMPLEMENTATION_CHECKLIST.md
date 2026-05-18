@@ -1,10 +1,10 @@
 # Implementation Checklist — MetroSolAPI
 
-> **Início:** 2024 | **Atualizado:** 2026-05-16 | **Progresso geral:** ~60%
+> **Started:** 2024 | **Updated:** 2026-05-18 | **Overall progress:** ~85%
 
 ---
 
-## Fase 1 — Domínio (MetroSol.Core) ✅ 100%
+## Phase 1 — Domain (MetroSol.Core) ✅ 100%
 
 ### BaseEntity
 - [x] Id (Guid, `newsequentialid()`)
@@ -12,79 +12,82 @@
 - [x] UpdatedAt (DateTime? UTC)
 - [x] IsDeleted (bool, soft delete)
 
-### Entidades — Tenant & Acesso
+### Entities — Tenant & Access
 - [x] `Organization` — Name, Country, City, State, Street, BuildingNumber, Complement, PostalCode, Timezone, ContactEmail
 - [x] `Lab` — OrganizationId FK, Name, Location, AccreditationNumber
 - [x] `User` — OrganizationId FK, LabId FK, Name, Email, PasswordHash, Role, Status
 - [x] `CustomerLabAccess` — UserId FK, LabId FK, GrantedAt, GrantedBy
 
-### Entidades — Instrumentos
+### Entities — Instruments
 - [x] `ItemType` — Name, SchemaJson, DefaultUnit, DefaultQuantityType
-- [x] `Item` — LabId FK, ItemTypeId FK, Tag, Description, Manufacturer, Model, SerialNumber, Unit, RangeMin, RangeMax, Status, LastCalibration, NextCalibrationDue
+- [x] `Item` — LabId FK, ItemTypeId FK, Tag, Description, Manufacturer, Model, SerialNumber, Parameter (owned), Status, LastAssessment, NextAssessmentDue, **IsReferenceStandard**, **QuantityType**
 
-### Entidades — Padrões & Rastreabilidade
-- [x] `ReferenceStandard` — LabId FK, Name, SerialNumber, Manufacturer, QuantityType, Unit, Status
-- [x] `StandardCertificate` — ReferenceStandardId FK, ParentCertificateId? (auto-ref), CertificateNumber, IssuingLab, AccreditationBody, DeclaredUncertainty, UncertaintyUnit, ValidFrom, ValidUntil, TraceabilityLevel, IsActive
+### Entities — Standards & Traceability
+- [x] `StandardCertificate` — ReferenceStandardId FK (→ Item), ParentCertificateId? (self-ref), CertificateNumber, IssuingLab, AccreditationBody, DeclaredUncertainty, UncertaintyUnit, ValidFrom, ValidUntil, TraceabilityLevel, IsActive
 
-### Entidades — Método & Calibração
-- [x] `CalibrationMethod` — ParentMethodId? (auto-ref), Name, Version, ApplicableItemTypes, DomainConceptsJson, FormulasJson, ToleranceRulesJson, DisplayTemplate, IsHomologating, Status
-- [x] `Calibration` — LabId FK, ItemId FK, ReferenceStandardId FK, StandardCertificateId FK, MethodId FK, TechnicianId FK, SupervisorId? FK, Status, ExpandedUncertainty, CoverageFactor, ConformityResult?, ApplicableStandard, Language, RejectionComment?, PerformedAt, ApprovedAt?
-- [x] `CalibrationPoint` — CalibrationId FK, ConceptName, NominalValue, MeasuredValue, Error, Correction, PointOrder, InputSource
+### Entities — Method & Assessment
+- [x] `AssessmentMethod` — ParentMethodId? (self-ref), Name, Version, ApplicableItemTypes, DomainConceptsJson, FormulasJson, ToleranceRulesJson, DisplayTemplate, IsHomologating, Status
+- [x] `Assessment` — LabId FK, ItemId FK, ReferenceStandardId FK, StandardCertificateId FK, MethodId FK, TechnicianId FK, SupervisorId? FK, Status, ExpandedUncertainty, CoverageFactor, ConformityResult?, ApplicableStandard, Language, RejectionComment?, PerformedAt, ApprovedAt? + owned entities: Customer, Requestor, EnvironmentConditions, WorkOrder
+- [x] `AssessmentPoint` — AssessmentId FK, ConceptName, NominalValue, MeasuredValue, Error, Correction, PointOrder, InputSource
 
-### Entidades — Emissão & Auditoria
-- [x] `Certificate` — CalibrationId FK (1-to-1), CertificateNumber, Standard, Language, Status, QrCodeUrl, IssuedAt, RevokedAt?, RevocationReason?
+### Entities — Issuance & Audit
+- [x] `AssessmentCertificate` — ItemId FK, CertificateNumber, IssuingLab, AssessmentDataJson, QrCodeUrl, ValidFrom, ValidUntil, IsActive
+- [x] `Certificate` — AssessmentId FK (1-to-1), CertificateNumber, Standard, Language, Status, QrCodeUrl, IssuedAt, RevokedAt?, RevocationReason?
 - [x] `BillingEvent` — CertificateId FK, OrganizationId FK, EventType, Amount (precision 18,4), Currency, Edition, OccurredAt
-- [x] `AuditLog` — UserId FK, CalibrationId? FK, Action, ChangesJson
+- [x] `AuditLog` — UserId FK, AssessmentId? FK, Action, ChangesJson
 
 ### Enums
 - [x] `UserRole` — Admin, Manager, Technician, Customer
+- [x] `UserStatus`
 - [x] `CertificateStatus` — Draft, PendingReview, Official, Voided, InHomologation, Revoked
-- [x] `ItemStatus` — Active, UnderCalibration, OutOfService, Retired
-- [x] `CalibrationStatus` — Draft, Submitted, Approved, Rejected
-- [x] `CalibrationMethodStatus` — Homologating, Official, Deprecated
+- [x] `ItemStatus` — Active, UnderAssessment, OutOfService, Retired
+- [x] `AssessmentStatus` — Draft, Submitted, Approved, Rejected
+- [x] `AssessmentMethodStatus` — Homologating, Official, Deprecated
 - [x] `ConformityResult` — Pass, Fail, Conditional
 - [x] `InputSource` — Manual, IoT, CsvImport
 - [x] `BillingEventType` — OfficialIssuance, SubscriptionCharge, Refund
 
 ### Interfaces
 - [x] `IRepository<T>` — GetByIdAsync, GetAllAsync, FindAsync, AddAsync, Update, Delete, SaveChangesAsync
-- [x] `ICertificateRepository`
 
 ---
 
-## Fase 2 — Testes (MetroSol.Tests) ✅ 100%
+## Phase 2 — Tests (MetroSol.Tests) ✅ 100%
 
-- [x] xUnit + Moq configurados
-- [x] `ItemEntityTests.cs` — 5 testes (propriedades, validações, [Theory])
-- [x] `RepositoryTests.cs` — 3 testes (GetAll, Add, GetById com mock)
-- [x] `AssertionExamplesTests.cs` — 15 exemplos de assertions
-- [x] `TesteTemplate.cs` — template para novos testes
-- [x] **21 testes passando, 0 falhados**
+- [x] xUnit + Moq configured
+- [x] `ItemEntityTests.cs` — 5 tests (properties, validations, [Theory])
+- [x] `RepositoryTests.cs` — 3 tests (GetAll, Add, GetById with mock)
+- [x] `AssertionExamplesTests.cs` — 15 assertion examples
+- [x] `TesteTemplate.cs` — template for new tests
+- [x] **21 tests passing, 0 failed**
 
-> Os testes de entidade precisarão ser revistos após remoção do `CalibrationCertificate` legado.
+> Entity tests may need review after renaming legacy `Calibration*` entities to `Assessment*`.
 
 ---
 
-## Fase 3 — Dados (MetroSol.Infrastructure) ✅ 95%
+## Phase 3 — Data (MetroSol.Infrastructure) ⏳ 80%
 
 ### DbContext
-- [x] `MetroSolDbContext` configurado com todos os DbSets
-- [x] `newsequentialid()` para todos os PKs
-- [x] QueryFilter global `IsDeleted = false` em todas as entidades
-- [x] Relacionamentos configurados: self-refs, dual FK User, 1-to-1 Certificate↔Calibration
-- [x] `BillingEvent.Amount` com precisão (18,4)
-- [ ] **Migration `FullERD` pendente** → `dotnet ef migrations add FullERD`
+- [x] `MetroSolDbContext` configured with all DbSets
+- [x] `newsequentialid()` for all PKs
+- [x] Global QueryFilter `IsDeleted = false` on all entities
+- [x] Relationships configured: self-refs, dual FK User, 1-to-1 Certificate↔Assessment, owned entities on Assessment
+- [x] `BillingEvent.Amount` with precision (18,4)
+- [ ] **Migration `FullERD` pending** → `dotnet ef migrations add FullERD`
 
-### Repositórios
-- [x] `Repository<T>` genérico (soft delete via QueryFilter)
-- [ ] Registar novos `IRepository<T>` no DI (Program.cs):
+### Repositories
+- [x] Generic `Repository<T>` (soft delete via QueryFilter)
+- [ ] Register new `IRepository<T>` in DI (Program.cs):
+  - [ ] `IRepository<Organization>`
   - [ ] `IRepository<Lab>`
+  - [ ] `IRepository<User>`
   - [ ] `IRepository<ItemType>`
-  - [ ] `IRepository<ReferenceStandard>`
+  - [ ] `IRepository<Item>`
   - [ ] `IRepository<StandardCertificate>`
-  - [ ] `IRepository<CalibrationMethod>`
-  - [ ] `IRepository<Calibration>`
-  - [ ] `IRepository<CalibrationPoint>`
+  - [ ] `IRepository<AssessmentMethod>`
+  - [ ] `IRepository<Assessment>`
+  - [ ] `IRepository<AssessmentPoint>`
+  - [ ] `IRepository<AssessmentCertificate>`
   - [ ] `IRepository<Certificate>`
   - [ ] `IRepository<BillingEvent>`
   - [ ] `IRepository<AuditLog>`
@@ -92,95 +95,98 @@
 
 ---
 
-## Fase 4 — API (MetroSolAPI) ⏳ 35%
+## Phase 4 — API (MetroSolAPI) ✅ 95%
 
 ### Auth
 - [x] `AuthController` — POST /auth/login, /auth/refresh, /auth/logout
-- [x] `TokenService` — emite JWT (access 15 min + refresh 7 dias)
-- [ ] **Adicionar claim `"lab"` (LabId) no JWT** — necessário para ItemController funcionar
-- [ ] Claim `"org"` já existe; verificar se é emitido corretamente
+- [x] `TokenService` — JWT with claims: `sub`, `email`, `name`, `jti`, `role`, `org` (OrganizationId), `lab` (LabId)
 
-### Controllers
-- [x] `ItemController` — GET /items, GET /items/{id}, POST /items, PUT /items/{id}, DELETE /items/{id}
-- [ ] `OrganizationController` — CRUD básico (admin only)
-- [ ] `LabController` — CRUD + CustomerLabAccess
-- [ ] `ItemTypeController` — CRUD (admin)
-- [ ] `ReferenceStandardController` — CRUD + upload de StandardCertificate
-- [ ] `CalibrationMethodController` — CRUD + versionamento + promote
-- [ ] `CalibrationController` — lifecycle completo (draft→submit→approve/reject)
-- [ ] `CertificateController` — GET, PDF download, revoke, verify (público)
+### Controllers ✅ All complete
+- [x] `AuthController` — login, refresh, logout
+- [x] `OrganizationController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (Admin-scoped)
+- [x] `LabController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (Admin or own-org scoped)
+- [x] `UserController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (Admin/Manager; lab-scoped for Managers)
+- [x] `ItemTypeController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (global; conflict check on name)
+- [x] `ItemController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (lab-scoped; includes IsReferenceStandard + QuantityType)
+- [x] `AssessmentMethodController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (global; validates ParentMethodId)
+- [x] `AssessmentController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (lab-scoped; full owned-entity mapping)
+- [x] `AssessmentPointController` — GET?assessmentId=, GET/{id}, POST, PUT/{id}, DELETE/{id} (lab-scoped via assessment guard)
+- [x] `StandardCertificateController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (lab-scoped via Item.IsReferenceStandard guard)
+- [x] `CertificateController` — GET, GET/{id}, POST (Approved assessment only, 1-to-1), PATCH/{id}/revoke (immutable otherwise)
+- [x] `AssessmentCertificateController` — GET, GET/{id}, POST, PUT/{id}, DELETE/{id} (lab-scoped via Item guard)
 
-### DTOs
-- [x] Auth (Login, Register, AuthResponse)
-- [x] Organization (Dto, Create, Update)
-- [x] User (Dto, Create, Update)
-- [x] Item (Dto, Create, Update) ← atualizado com campos ERD
-- [ ] Lab (Dto, Create, Update)
-- [ ] ItemType (Dto, Create, Update)
-- [ ] ReferenceStandard (Dto, Create, Update)
-- [ ] StandardCertificate (Dto, Create)
-- [ ] CalibrationMethod (Dto, Create, Update)
-- [ ] Calibration (Dto, Create, SubmitDto, ApproveDto)
-- [ ] CalibrationPoint (Dto, Create)
-- [ ] Certificate (Dto, RevokeDto)
-- [ ] BillingEvent (Dto)
-- [ ] CustomerLabAccess (Dto, GrantDto)
+### DTOs ✅ All complete
+- [x] Auth — LoginDto, RegisterDto, AuthResponseDto
+- [x] Organization — OrgDto, OrgCreateDto, OrgUpdateDto
+- [x] Lab — LabDto, LabCreateDto, LabUpdateDto
+- [x] User — UserDto, UserCreateDto, UserUpdateDto (includes LabId, Status)
+- [x] ItemType — ItemTypeDto, ItemTypeCreateDto, ItemTypeUpdateDto
+- [x] Item — ItemDto, ItemCreateDto, ItemUpdateDto (includes IsReferenceStandard, QuantityType, ParameterDto)
+- [x] AssessmentMethod — AssessmentMethodDto, AssessmentMethodCreateDto, AssessmentMethodUpdateDto
+- [x] Assessment — AssessmentDto, AssessmentCreateDto, AssessmentUpdateDto + owned: CustomerDto, RequestorDto, EnvironmentDto, WorkOrderDto
+- [x] AssessmentPoint — AssessmentPointDto, AssessmentPointCreateDto, AssessmentPointUpdateDto
+- [x] StandardCertificate — StandardCertificateDto, StandardCertificateCreateDto, StandardCertificateUpdateDto
+- [x] Certificate — CertificateDto, CertificateCreateDto, CertificateRevokeDto
+- [x] AssessmentCertificate — AssessmentCertificateDto, AssessmentCertificateCreateDto, AssessmentCertificateUpdateDto
 
 ### Program.cs
-- [x] DbContext registado
-- [x] JWT configurado
+- [x] DbContext registered
+- [x] JWT configured (with `lab` + `org` claims)
 - [x] Scalar/OpenAPI
-- [x] CORS básico
-- [ ] Registar novos `IRepository<T>` (ver Fase 3)
+- [x] Basic CORS
+- [ ] Register all `IRepository<T>` (see Phase 3)
 
 ---
 
-## Fase 5 — Segurança ⏳ 50%
+## Phase 5 — Security ✅ 90%
 
-- [x] JWT access token (15 min) + refresh token (7 dias)
+- [x] JWT access token (15 min) + refresh token (7 days)
 - [x] Role-based authorization (`[Authorize(Roles = "...")]`)
-- [x] Multi-tenancy por LabId (isolamento no ItemController)
-- [ ] Claim `"lab"` no TokenService
-- [ ] Revogação do refresh token no logout (verificar implementação atual)
+- [x] Multi-tenancy by LabId — enforced in all lab-scoped controllers via `lab` JWT claim
+- [x] `"lab"` claim in TokenService
+- [x] `"org"` claim in TokenService
+- [x] Cross-tenant access blocked: Item, Assessment, AssessmentPoint, StandardCertificate, Certificate, AssessmentCertificate all check LabId isolation
+- [x] Role guards: Admin-only for Delete (Org, Lab, User); Technician blocked from Delete on Items; Certificate create/revoke restricted to Admin/Manager
+- [ ] Refresh token revocation on logout (verify current implementation)
 - [ ] Rate limiting
-- [ ] FluentValidation nos DTOs (opcional — validações básicas com DataAnnotations já existem)
+- [ ] FluentValidation on DTOs (optional — DataAnnotations already cover basic validation)
 
 ---
 
-## Fase 6 — Limpeza ⬜ 0%
+## Phase 6 — Cleanup ⬜ 0%
 
-- [ ] Remover entidade `CalibrationCertificate` (stub legado)
-- [ ] Remover `ICertificateRepository` ou adaptar para `Certificate`
-- [ ] Remover DTOs `CalibrationCertificate*`
-- [ ] Atualizar testes de entidade para novo modelo
+- [ ] Remove legacy `CalibrationCertificate` entity/DTOs (renamed to `AssessmentCertificate`)
+- [ ] Remove `ICertificateRepository` or adapt if still referenced
+- [ ] Update entity tests for the renamed Assessment model
+- [ ] Review `BillingEvent` and `AuditLog` — not yet wired to controllers
 
 ---
 
-## Resumo de Progresso
+## Progress Summary
 
-| Fase | Status | % |
+| Phase | Status | % |
 |---|---|---|
-| Core (Domínio) | ✅ Completo | 100% |
-| Testes unitários | ✅ Completo | 100% |
-| Infrastructure | ✅ Quase completo | 95% |
-| API — Auth | ✅ Completo | 100% |
-| API — Controllers | ⏳ Em andamento | 25% |
-| API — DTOs | ⏳ Em andamento | 35% |
-| Segurança | ⏳ Em andamento | 50% |
-| Limpeza / Legado | ⬜ Pendente | 0% |
+| Core (Domain) | ✅ Complete | 100% |
+| Unit Tests | ✅ Complete | 100% |
+| Infrastructure | ⏳ In progress | 80% |
+| API — Auth | ✅ Complete | 100% |
+| API — Controllers | ✅ Complete | 100% |
+| API — DTOs | ✅ Complete | 100% |
+| Security | ✅ Nearly complete | 90% |
+| Cleanup / Legacy | ⬜ Pending | 0% |
 
 ---
 
-## Próximas Ações (ordem de prioridade)
+## Next Actions (priority order)
 
-1. `dotnet ef migrations add FullERD` — gerar migration do novo schema
-2. Adicionar claim `"lab"` ao `TokenService`
-3. Registar os novos `IRepository<T>` no `Program.cs`
-4. Criar `LabController` + DTOs Lab
-5. Criar `CalibrationController` + DTOs Calibration
-6. Criar `CertificateController` + DTOs Certificate
-7. Remover código legado (`CalibrationCertificate`)
+1. Register all `IRepository<T>` in `Program.cs` — required for controllers to resolve at runtime
+2. `dotnet ef migrations add FullERD` — generate EF Core migration for the current schema
+3. Run `dotnet build` and verify zero compiler errors
+4. Remove legacy `CalibrationCertificate` entity and DTOs
+5. Update entity unit tests to match renamed Assessment model
+6. Implement refresh token revocation on logout
+7. Wire `BillingEvent` and `AuditLog` controllers if needed
 
 ---
 
-**Última atualização:** 2026-05-16
+**Last updated:** 2026-05-18

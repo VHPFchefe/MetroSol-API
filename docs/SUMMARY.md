@@ -1,73 +1,73 @@
-# Resumo Executivo — MetroSolAPI
+# Executive Summary — MetroSolAPI
 
-> **Atualizado:** 2026-05-16 | **Versão:** 1.2 | **Stack:** .NET 10 · EF Core · SQL Server
-
----
-
-## O que é o MetroSol
-
-Plataforma de gestão de calibrações metrológicas multi-tenant. Cobre o ciclo completo de calibração — desde o registro de instrumentos e padrões de referência, passando pela execução estruturada de calibrações, workflow de aprovação e geração de certificados ISO-conformes, até o faturamento por emissão oficial.
-
-**Edições:** Web SaaS (Angular) · Mobile (Flutter) · Desktop (offline, livre)
+> **Updated:** 2026-05-16 | **Version:** 1.2 | **Stack:** .NET 10 · EF Core · SQL Server
 
 ---
 
-## Progresso atual
+## What is MetroSol
 
-| Componente | Status | % |
+Multi-tenant metrology calibration management platform. Covers the complete calibration lifecycle — from instrument and reference standard registration, through structured calibration execution, approval workflow and ISO-compliant certificate generation, to billing for official issuance.
+
+**Editions:** Web SaaS (Angular) · Mobile (Flutter) · Desktop (offline, free)
+
+---
+
+## Current Progress
+
+| Component | Status | % |
 |---|---|---|
-| Domínio — Entidades (15) | ✅ Completo | 100% |
-| Domínio — Enums (8) | ✅ Completo | 100% |
-| Domínio — Interfaces | ✅ Completo | 100% |
-| Infrastructure — DbContext | ✅ Completo | 100% |
-| Infrastructure — Repository\<T\> | ✅ Completo | 100% |
-| Infrastructure — Migration | ⬜ Pendente | 0% |
-| API — Auth | ✅ Completo | 100% |
-| API — ItemController | ✅ Completo | 100% |
-| API — Outros Controllers | ⬜ Pendente | 0% |
-| API — DTOs base | ✅ Completo | 100% |
-| API — DTOs restantes | ⬜ Pendente | 0% |
-| Testes unitários | ✅ Completo | 100% |
-| **TOTAL GERAL** | **⏳ Em andamento** | **~60%** |
+| Domain — Entities (15) | ✅ Complete | 100% |
+| Domain — Enums (8) | ✅ Complete | 100% |
+| Domain — Interfaces | ✅ Complete | 100% |
+| Infrastructure — DbContext | ✅ Complete | 100% |
+| Infrastructure — Repository\<T\> | ✅ Complete | 100% |
+| Infrastructure — Migration | ⬜ Pending | 0% |
+| API — Auth | ✅ Complete | 100% |
+| API — ItemController | ✅ Complete | 100% |
+| API — Other Controllers | ⬜ Pending | 0% |
+| API — Base DTOs | ✅ Complete | 100% |
+| API — Remaining DTOs | ⬜ Pending | 0% |
+| Unit Tests | ✅ Complete | 100% |
+| **TOTAL** | **⏳ In progress** | **~60%** |
 
 ---
 
-## Entidades implementadas (ERD completo)
+## Implemented Entities (complete ERD)
 
 ```
 Organization → Lab → User, Item, ReferenceStandard, Calibration
 ItemType → Item
-StandardCertificate (auto-ref) → cadeia de rastreabilidade
-CalibrationMethod (auto-ref) → versionamento de métodos
+StandardCertificate (self-ref) → traceability chain
+CalibrationMethod (self-ref) → method versioning
 Calibration → CalibrationPoint, Certificate, AuditLog
 Certificate → BillingEvent
 ```
 
-**14 entidades funcionais** + 1 stub legado (`CalibrationCertificate` — a remover).
+**14 functional entities** + 1 legacy stub (`CalibrationCertificate` — to be removed).
 
 ---
 
-## Próximas 5 ações prioritárias
+## Next 5 Priority Actions
 
-1. `dotnet ef migrations add FullERD` — aplicar novo schema no banco
-2. Adicionar claim `"lab"` ao `TokenService` (necessário para ItemController)
-3. Registar novos `IRepository<T>` no `Program.cs`
-4. Criar `LabController` + `CalibrationController` + `CertificateController`
-5. Remover entidade legada `CalibrationCertificate`
+1. `dotnet ef migrations add FullERD` — apply new schema to the database
+2. Add `"lab"` claim to `TokenService` (required for ItemController)
+3. Register new `IRepository<T>` in `Program.cs`
+4. Create `LabController` + `CalibrationController` + `CertificateController`
+5. Remove legacy entity `CalibrationCertificate`
 
 ---
 
-## Documentação disponível
+## Available Documentation
 
-| Documento | Propósito |
+| Document | Purpose |
 |---|---|
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Arquitetura completa, entidades e padrões |
-| [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) | Status detalhado e próximas tarefas |
-| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Referência rápida — padrões, comandos, FK table |
-| [Diagrams.md](./Diagrams.md) | ERD, fluxos, freemium model, rastreabilidade |
-| [GETTING_STARTED.md](./GETTING_STARTED.md) | Setup do ambiente passo a passo |
-| [TESTING.md](./TESTING.md) | Guia de testes unitários |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Complete architecture, entities and patterns |
+| [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) | Detailed status and next tasks |
+| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Quick reference — patterns, commands, FK table |
+| [Diagrams.md](./Diagrams.md) | ERD, flows, freemium model, traceability |
+| [GETTING_STARTED.md](./GETTING_STARTED.md) | Step-by-step environment setup |
+| [TESTING.md](./TESTING.md) | Unit testing guide |
 
 ---
 
-**Atualizado:** 2026-05-16
+**Updated:** 2026-05-16

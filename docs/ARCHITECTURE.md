@@ -1,28 +1,29 @@
 # MetroSolAPI — Architecture
 
-> **Versão:** 1.2 | **Stack:** .NET 10 · C# 13 · EF Core · SQL Server | **Atualizado:** 2026-05-16
+> **Version:** 1.2 | **Stack:** .NET 10 · C# 13 · EF Core · SQL Server | **Updated:** 2026-05-16  
+> See [INDEX.md](./INDEX.md) for navigation and [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for code patterns.
 
 ---
 
-## Visão Geral
+## Overview
 
-MetroSol é uma plataforma de gestão de calibrações metrológicas multi-tenant. A API segue arquitetura em camadas (Core → Infrastructure → API) sem service layer explícita — o Repository Pattern é chamado diretamente nos controllers enquanto a lógica de negócio é simples o suficiente para isso.
+MetroSol is a multi-tenant metrology calibration management platform. The API follows a layered architecture (Core → Infrastructure → API) without an explicit service layer — the Repository Pattern is called directly in controllers while business logic is simple enough for this approach.
 
 ```
 MetroSolAPI/
-├── MetroSol.Core/           ← Domínio: entidades, enums, interfaces
-├── MetroSol.Infrastructure/ ← Dados: DbContext, Repository<T>
-├── MetroSolAPI/             ← Apresentação: Controllers, DTOs
-└── MetroSol.Tests/          ← Testes unitários (xUnit)
+├── MetroSol.Core/           ← Domain: entities, enums, interfaces
+├── MetroSol.Infrastructure/ ← Data: DbContext, Repository<T>
+├── MetroSolAPI/             ← Presentation: Controllers, DTOs
+└── MetroSol.Tests/          ← Unit tests (xUnit)
 ```
 
 ---
 
-## 1. Camada de Domínio — MetroSol.Core
+## 1. Domain Layer — MetroSol.Core
 
 ### 1.1 BaseEntity
 
-Classe base de todas as entidades. Fornece Id sequencial (SQL Server `newsequentialid()`), timestamps UTC e soft delete.
+Base class for all entities. Provides sequential Id (SQL Server `newsequentialid()`), UTC timestamps, and soft delete.
 
 ```csharp
 public abstract class BaseEntity
@@ -34,54 +35,54 @@ public abstract class BaseEntity
 }
 ```
 
-### 1.2 Entidades
+### 1.2 Entities
 
-O modelo segue o ERD completo da documentação do produto (`MetroSol-Documentation/index.html`). Hierarquia de multi-tenancy: **Organization → Lab → (Users, Items, ReferenceStandards, Calibrations)**.
+The model follows the complete ERD from product documentation (`MetroSol-Documentation/index.html`). Multi-tenancy hierarchy: **Organization → Lab → (Users, Items, ReferenceStandards, Calibrations)**.
 
-#### Tenant & Acesso
+#### Tenant & Access
 
-| Entidade | Descrição | FKs Principais |
+| Entity | Description | Primary FKs |
 |---|---|---|
-| `Organization` | Empresa/laboratório contratante | — |
-| `Lab` | Unidade de calibração dentro de uma org | OrganizationId |
-| `User` | Usuário do sistema (qualquer role) | OrganizationId, LabId |
-| `CustomerLabAccess` | Acesso de um cliente a um ou mais labs | UserId, LabId |
+| `Organization` | Contracting company/laboratory | — |
+| `Lab` | Calibration unit within an org | OrganizationId |
+| `User` | System user (any role) | OrganizationId, LabId |
+| `CustomerLabAccess` | Customer access to one or more labs | UserId, LabId |
 
-#### Instrumentos
+#### Instruments
 
-| Entidade | Descrição | FKs Principais |
+| Entity | Description | Primary FKs |
 |---|---|---|
-| `ItemType` | Tipo de instrumento (termômetro, manômetro…) | — |
-| `Item` | Instrumento físico a ser calibrado | LabId, ItemTypeId |
+| `ItemType` | Instrument type (thermometer, gauge…) | — |
+| `Item` | Physical instrument to be calibrated | LabId, ItemTypeId |
 
-#### Padrões & Rastreabilidade
+#### Standards & Traceability
 
-| Entidade | Descrição | FKs Principais |
+| Entity | Description | Primary FKs |
 |---|---|---|
-| `ReferenceStandard` | Padrão de referência do lab | LabId |
-| `StandardCertificate` | Certificado de um padrão; auto-referência para cadeia de rastreabilidade | ReferenceStandardId, ParentCertificateId? |
+| `ReferenceStandard` | Lab reference standard | LabId |
+| `StandardCertificate` | Certificate of a standard; self-reference for traceability chain | ReferenceStandardId, ParentCertificateId? |
 
-#### Calibração
+#### Calibration
 
-| Entidade | Descrição | FKs Principais |
+| Entity | Description | Primary FKs |
 |---|---|---|
-| `CalibrationMethod` | Definição do método; auto-referência para versionamento | ParentMethodId? |
-| `Calibration` | Execução de uma calibração | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? |
-| `CalibrationPoint` | Ponto de medição individual | CalibrationId |
+| `CalibrationMethod` | Method definition; self-reference for versioning | ParentMethodId? |
+| `Calibration` | Execution of a calibration | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? |
+| `CalibrationPoint` | Individual measurement point | CalibrationId |
 
-#### Emissão & Faturamento
+#### Issuance & Billing
 
-| Entidade | Descrição | FKs Principais |
+| Entity | Description | Primary FKs |
 |---|---|---|
-| `Certificate` | Certificado formal emitido após aprovação (1-to-1 com Calibration) | CalibrationId |
-| `BillingEvent` | Evento de cobrança por emissão oficial | CertificateId, OrganizationId |
-| `AuditLog` | Trilha imutável de mudanças de estado | UserId, CalibrationId? |
+| `Certificate` | Formal certificate issued after approval (1-to-1 with Calibration) | CalibrationId |
+| `BillingEvent` | Billing event for official issuance | CertificateId, OrganizationId |
+| `AuditLog` | Immutable trail of state changes | UserId, CalibrationId? |
 
-> `CalibrationCertificate` é um stub legado mantido por compatibilidade. Será removido quando os controllers de Calibração e Certificate estiverem prontos.
+> `CalibrationCertificate` is a legacy stub maintained for compatibility. Will be removed once Calibration and Certificate controllers are ready.
 
 ### 1.3 Enums
 
-| Enum | Valores |
+| Enum | Values |
 |---|---|
 | `UserRole` | Admin=1, Manager=2, Technician=3, Customer=4 |
 | `CertificateStatus` | Draft=1, PendingReview=2, Official=3, Voided=4, InHomologation=5, Revoked=6 |
@@ -110,29 +111,29 @@ public interface IRepository<T> where T : BaseEntity
 
 ---
 
-## 2. Camada de Dados — MetroSol.Infrastructure
+## 2. Data Layer — MetroSol.Infrastructure
 
 ### 2.1 MetroSolDbContext
 
-Todos os 15 `DbSet`s estão registados. Destaques da configuração em `OnModelCreating`:
+All 15 `DbSet`s are registered. Highlights of configuration in `OnModelCreating`:
 
-- **`newsequentialid()`** como default SQL para todos os PKs (evita fragmentação de índice)
-- **QueryFilter global** `IsDeleted = false` em cada entidade — soft delete transparente
-- **Auto-referências** configuradas sem ciclo de cascade: `StandardCertificate.ParentCertificateId` e `CalibrationMethod.ParentMethodId`
-- **Dupla FK para User** em `Calibration` (TechnicianId + SupervisorId) com `OnDelete(Restrict)` em ambas
-- **1-to-1** `Certificate` ↔ `Calibration` via FK em `Certificate`
-- **Cascade** apenas em `CalibrationPoint → Calibration` (pontos não fazem sentido sem a calibração)
-- `BillingEvent.Amount` configurado com `HasPrecision(18, 4)`
+- **`newsequentialid()`** as default SQL for all PKs (prevents index fragmentation)
+- **Global QueryFilter** `IsDeleted = false` on each entity — transparent soft delete
+- **Self-references** configured without cascade cycle: `StandardCertificate.ParentCertificateId` and `CalibrationMethod.ParentMethodId`
+- **Dual FK for User** in `Calibration` (TechnicianId + SupervisorId) with `OnDelete(Restrict)` on both
+- **1-to-1** `Certificate` ↔ `Calibration` via FK in `Certificate`
+- **Cascade** only in `CalibrationPoint → Calibration` (points don't make sense without the calibration)
+- `BillingEvent.Amount` configured with `HasPrecision(18, 4)`
 
 ### 2.2 Repository\<T\>
 
-Repositório genérico implementa `IRepository<T>`. O QueryFilter do DbContext garante que registos com `IsDeleted = true` nunca aparecem nas queries.
+Generic repository implements `IRepository<T>`. The DbContext's QueryFilter ensures that records with `IsDeleted = true` never appear in queries.
 
 ---
 
-## 3. Camada de Apresentação — MetroSolAPI
+## 3. Presentation Layer — MetroSolAPI
 
-### 3.1 Controllers existentes
+### 3.1 Existing controllers
 
 | Controller | Endpoints | Roles |
 |---|---|---|
@@ -141,14 +142,14 @@ Repositório genérico implementa `IRepository<T>`. O QueryFilter do DbContext g
 
 ### 3.2 JWT Claims
 
-| Claim | Valor | Usado por |
+| Claim | Value | Used by |
 |---|---|---|
-| `sub` | UserId (Guid) | Todos os controllers |
-| `org` | OrganizationId (Guid) | AuthController, filtros de org |
-| `lab` | LabId (Guid) | ItemController e futuros controllers de lab |
-| `role` | UserRole (string) | Autorização por role |
+| `sub` | UserId (Guid) | All controllers |
+| `org` | OrganizationId (Guid) | AuthController, org filters |
+| `lab` | LabId (Guid) | ItemController and future lab controllers |
+| `role` | UserRole (string) | Role-based authorization |
 
-> **Pendente:** o `TokenService` ainda não emite o claim `"lab"`. Necessário antes de testar o `ItemController`.
+> **Pending:** the `TokenService` still does not emit the `"lab"` claim. Necessary before testing the `ItemController`.
 
 ### 3.3 DTOs
 
@@ -157,87 +158,87 @@ DTOs/
 ├── Auth/        LoginDto, RegisterDto, AuthResponseDto
 ├── Organization/ OrganizationDto, Create, Update
 ├── User/         UserDto, Create, Update
-├── Item/         ItemDto, Create, Update       ← atualizado com campos ERD
-└── CalibrationCertificate/  (stub legado)
+├── Item/         ItemDto, Create, Update       ← updated with ERD fields
+└── CalibrationCertificate/  (legacy stub)
 ```
 
 ---
 
-## 4. Padrões de Código
+## 4. Code Patterns
 
 ### Soft Delete
 ```csharp
-// Nunca DELETE físico — sempre soft delete via Repository
-_repository.Delete(entity);          // seta IsDeleted = true
+// Never physical DELETE — always soft delete via Repository
+_repository.Delete(entity);          // sets IsDeleted = true
 await _repository.SaveChangesAsync();
-// QueryFilter global garante que IsDeleted = true nunca retorna em queries
+// Global QueryFilter ensures that IsDeleted = true never returns in queries
 ```
 
-### Multi-tenancy (isolamento por Lab)
+### Multi-tenancy (isolation by Lab)
 ```csharp
-// Lê o LabId do claim JWT, filtra pelo lab do usuário
+// Reads the LabId from JWT claim, filters by user's lab
 var labId = Guid.Parse(User.FindFirstValue("lab")!);
 var items = await _items.FindAsync(i => i.LabId == labId);
 ```
 
 ### UpdateDto — patch-style
 ```csharp
-// Apenas campos não-null são aplicados
+// Only non-null fields are applied
 if (dto.Tag is not null) entity.Tag = dto.Tag;
 _repository.Update(entity);
 ```
 
-### Datas sempre UTC
+### Dates always UTC
 ```csharp
-// ✅ Correto
+// ✅ Correct
 public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-// ❌ Errado
+// ❌ Wrong
 public DateTime CreatedAt { get; set; } = DateTime.Now;
 ```
 
 ---
 
-## 5. Modelo de Freemium — Homologação
+## 5. Freemium Model — Homologation
 
-O campo `CalibrationMethod.IsHomologating = true` força o status `InHomologation` em todos os certificados produzidos por aquele método:
+The `CalibrationMethod.IsHomologating = true` field forces the `InHomologation` status on all certificates produced by that method:
 
-- `Certificate.Status = InHomologation` → PDF bloqueado na API (HTTP 403)
-- Promoção do método para `Official` → todos os certificados associados são re-emitidos como `Official`
-- `BillingEvent` é criado apenas na emissão de certificados `Official`
+- `Certificate.Status = InHomologation` → PDF blocked in API (HTTP 403)
+- Method promotion to `Official` → all associated certificates are re-issued as `Official`
+- `BillingEvent` is created only on issuance of `Official` certificates
 
 ---
 
 ## 6. Tech Stack
 
-| Camada | Tecnologia |
+| Layer | Technology |
 |---|---|
 | Runtime | .NET 10 |
-| Linguagem | C# 13 |
+| Language | C# 13 |
 | ORM | Entity Framework Core 10 |
-| Banco | SQL Server (local: 127.0.0.1:1433, DB: MetroSolDb) |
-| Auth | JWT (access 15 min + refresh 7 dias) |
-| Docs API | Scalar / OpenAPI |
-| Testes | xUnit + Moq |
-| Mobile (futuro) | Flutter |
-| Web (futuro) | Angular |
+| Database | SQL Server (local: 127.0.0.1:1433, DB: MetroSolDb) |
+| Auth | JWT (access 15 min + refresh 7 days) |
+| API Docs | Scalar / OpenAPI |
+| Tests | xUnit + Moq |
+| Mobile (future) | Flutter |
+| Web (future) | Angular |
 
 ---
 
-## 7. Próximos Passos
+## 7. Next Steps
 
-1. Adicionar claim `"lab"` ao `TokenService`
-2. `dotnet ef migrations add FullERD` — aplicar novo schema
-3. Registar `IRepository<Lab>` e demais repositórios no DI (`Program.cs`)
+1. Add `"lab"` claim to `TokenService`
+2. `dotnet ef migrations add FullERD` — apply new schema
+3. Register `IRepository<Lab>` and other repositories in DI (`Program.cs`)
 4. Controllers: `Lab`, `ItemType`, `ReferenceStandard`, `Calibration`, `Certificate`
-5. Remover `CalibrationCertificate` (stub legado)
+5. Remove `CalibrationCertificate` (legacy stub)
 
 ---
 
 **Changelog:**
 
-| Data | Versão | Alteração |
+| Date | Version | Change |
 |---|---|---|
-| 2026-05-16 | 1.2 | Geradas as 11 entidades restantes do ERD; DbContext configurado; ItemController atualizado |
-| 2026-05-15 | 1.1 | AuthController, DTOs, controllers base |
-| 2024 | 1.0 | Estrutura inicial (4 entidades) |
+| 2026-05-16 | 1.2 | Generated remaining 11 ERD entities; DbContext configured; ItemController updated |
+| 2026-05-15 | 1.1 | AuthController, DTOs, base controllers |
+| 2024 | 1.0 | Initial structure (4 entities) |

@@ -67,7 +67,7 @@ public class ItemController : ControllerBase
 
         var item = await _items.GetByIdAsync(id);
         if (item is null)
-            return NotFound(new { message = $"Item '{id}' não encontrado." });
+            return NotFound(new { message = $"Item '{id}' not found." });
 
         if (item.LabId != labId.Value)
             return Forbid();
@@ -101,11 +101,18 @@ public class ItemController : ControllerBase
             Manufacturer      = dto.Manufacturer,
             Model             = dto.Model,
             SerialNumber      = dto.SerialNumber,
-            Unit              = dto.Unit,
-            RangeMin          = dto.RangeMin,
-            RangeMax          = dto.RangeMax,
-            LastCalibration   = dto.LastCalibration,
-            NextCalibrationDue = dto.NextCalibrationDue
+            Parameter         = dto.Parameter is null ? null : new MetroSol.Core.Entities.Parameter
+            {
+                Unit         = dto.Parameter.Unit,
+                LowerLimit   = dto.Parameter.LowerLimit,
+                UpperLimit   = dto.Parameter.UpperLimit,
+                Resolution   = dto.Parameter.Resolution,
+                CustomFields = dto.Parameter.CustomFields
+            },
+            LastAssessment    = dto.LastAssessment,
+            NextAssessmentDue    = dto.NextAssessmentDue,
+            IsReferenceStandard  = dto.IsReferenceStandard,
+            QuantityType         = dto.QuantityType
         };
 
         await _items.AddAsync(item);
@@ -129,7 +136,7 @@ public class ItemController : ControllerBase
 
         var item = await _items.GetByIdAsync(id);
         if (item is null)
-            return NotFound(new { message = $"Item '{id}' não encontrado." });
+            return NotFound(new { message = $"Item '{id}' not found." });
 
         if (item.LabId != labId.Value)
             return Forbid();
@@ -139,12 +146,19 @@ public class ItemController : ControllerBase
         if (dto.Manufacturer      is not null) item.Manufacturer      = dto.Manufacturer;
         if (dto.Model             is not null) item.Model             = dto.Model;
         if (dto.SerialNumber      is not null) item.SerialNumber      = dto.SerialNumber;
-        if (dto.Unit              is not null) item.Unit              = dto.Unit;
-        if (dto.RangeMin          is not null) item.RangeMin          = dto.RangeMin;
-        if (dto.RangeMax          is not null) item.RangeMax          = dto.RangeMax;
-        if (dto.Status            is not null) item.Status            = dto.Status.Value;
-        if (dto.LastCalibration   is not null) item.LastCalibration   = dto.LastCalibration;
-        if (dto.NextCalibrationDue is not null) item.NextCalibrationDue = dto.NextCalibrationDue;
+        if (dto.Parameter         is not null) item.Parameter         = new MetroSol.Core.Entities.Parameter
+        {
+            Unit         = dto.Parameter.Unit,
+            LowerLimit   = dto.Parameter.LowerLimit,
+            UpperLimit   = dto.Parameter.UpperLimit,
+            Resolution   = dto.Parameter.Resolution,
+            CustomFields = dto.Parameter.CustomFields
+        };
+        if (dto.Status              is not null) item.Status              = dto.Status.Value;
+        if (dto.LastAssessment      is not null) item.LastAssessment      = dto.LastAssessment;
+        if (dto.NextAssessmentDue   is not null) item.NextAssessmentDue   = dto.NextAssessmentDue;
+        if (dto.IsReferenceStandard is not null) item.IsReferenceStandard = dto.IsReferenceStandard.Value;
+        if (dto.QuantityType        is not null) item.QuantityType        = dto.QuantityType;
 
         _items.Update(item);
         await _items.SaveChangesAsync();
@@ -167,7 +181,7 @@ public class ItemController : ControllerBase
 
         var item = await _items.GetByIdAsync(id);
         if (item is null)
-            return NotFound(new { message = $"Item '{id}' não encontrado." });
+            return NotFound(new { message = $"Item '{id}' not found." });
 
         if (item.LabId != labId.Value)
             return Forbid();
@@ -189,13 +203,20 @@ public class ItemController : ControllerBase
         Manufacturer       = item.Manufacturer,
         Model              = item.Model,
         SerialNumber       = item.SerialNumber,
-        Unit               = item.Unit,
-        RangeMin           = item.RangeMin,
-        RangeMax           = item.RangeMax,
-        Status             = item.Status,
-        LastCalibration    = item.LastCalibration,
-        NextCalibrationDue = item.NextCalibrationDue,
-        CreatedAt          = item.CreatedAt,
-        UpdatedAt          = item.UpdatedAt
+        Parameter          = item.Parameter is null ? null : new ParameterDto
+        {
+            Unit         = item.Parameter.Unit,
+            LowerLimit   = item.Parameter.LowerLimit,
+            UpperLimit   = item.Parameter.UpperLimit,
+            Resolution   = item.Parameter.Resolution,
+            CustomFields = item.Parameter.CustomFields
+        },
+        Status               = item.Status,
+        LastAssessment       = item.LastAssessment,
+        NextAssessmentDue    = item.NextAssessmentDue,
+        IsReferenceStandard  = item.IsReferenceStandard,
+        QuantityType         = item.QuantityType,
+        CreatedAt            = item.CreatedAt,
+        UpdatedAt            = item.UpdatedAt
     };
 }

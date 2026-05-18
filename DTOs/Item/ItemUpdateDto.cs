@@ -20,12 +20,12 @@ public class ItemUpdateDto
     [MaxLength(100)]
     public string? SerialNumber { get; set; }
 
-    [MaxLength(20)]
-    public string? Unit { get; set; }
-
-    public double? RangeMin { get; set; }
-    public double? RangeMax { get; set; }
+    public ParameterDto? Parameter { get; set; }
     public ItemStatus? Status { get; set; }
-    public DateTime? LastCalibration { get; set; }
-    public DateTime? NextCalibrationDue { get; set; }
+    public DateTime? LastAssessment { get; set; }
+    public DateTime? NextAssessmentDue { get; set; }
+    public bool? IsReferenceStandard { get; set; }
+
+    [MaxLength(100)]
+    public string? QuantityType { get; set; }
 }

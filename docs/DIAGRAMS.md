@@ -1,23 +1,23 @@
-# Diagramas — MetroSolAPI
+# Diagrams — MetroSolAPI
 
-> Atualizado: 2026-05-16 | Reflete o ERD completo da documentação do produto
+> Updated: 2026-05-16 | Reflects the complete ERD from the product documentation
 
 ---
 
-## 1. Arquitetura em Camadas
+## 1. Layered Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────┐
 │                  PRESENTATION (MetroSolAPI)              │
 │                                                          │
 │  Controllers             DTOs              Program.cs    │
-│  ┌───────────────┐   ┌─────────────────┐  ┌──────────┐  │
-│  │ AuthController│   │ Auth/*          │  │  DI      │  │
-│  │ ItemController│   │ Organization/*  │  │  JWT     │  │
-│  │ (+ futuros)   │   │ User/*          │  │  Scalar  │  │
-│  └───────────────┘   │ Item/*          │  └──────────┘  │
-│                       │ (+ futuros)    │                 │
-│                       └─────────────────┘                │
+│  ┌───────────────┐   ┌─────────────────┐  ┌──────────┐   │
+│  │ AuthController│   │ Auth/*          │  │  DI      │   │
+│  │ ItemController│   │ Organization/*  │  │  JWT     │   │
+│  │ (+ future)    │   │ User/*          │  │  Scalar  │   │
+│  └───────────────┘   │ Item/*          │  └──────────┘   │
+│                      │ (+ future)      │                 │
+│                      └─────────────────┘                 │
 └───────────────────────────┬──────────────────────────────┘
                             │ Entities (POCOs)
                             │ IRepository<T>
@@ -48,10 +48,10 @@
 │             DATA ACCESS (MetroSol.Infrastructure)        │
 │                                                          │
 │  MetroSolDbContext         Repository<T>                 │
-│  • 15 DbSets               • GetByIdAsync               │
+│  • 15 DbSets               • GetByIdAsync                │
 │  • newsequentialid()       • GetAllAsync                 │
 │  • QueryFilter IsDeleted   • FindAsync                   │
-│  • Relacionamentos         • AddAsync / Update / Delete  │
+│  • Relationships           • AddAsync / Update / Delete  │
 │    (self-refs, dual FK)    • SaveChangesAsync            │
 └───────────────────────────┬──────────────────────────────┘
                             │ SQL
@@ -64,20 +64,20 @@
 
 ---
 
-## 2. Modelo Entidade-Relacionamento (ERD)
+## 2. Entity-Relationship Model (ERD)
 
 ```
-ORGANIZATION ─────────────────────────────────────┐
-│ Id (PK)                                          │
-│ Name, Country, Timezone, ContactEmail...         │
-└──── 1:N ──── LAB                                │
-               │ Id (PK)                           │
-               │ OrganizationId (FK)               │
+ORGANIZATION ───────────────────────────────────────┐
+│ Id (PK)                                           │
+│ Name, Country, Timezone, ContactEmail...          │
+└──── 1:N ──── LAB                                  │
+               │ Id (PK)                            │
+               │ OrganizationId (FK)                │
                │ Name, Location, AccreditationNumber│
-               │                                   │
-         ┌─────┼──────────────┬────────────────┐   │
-         │     │              │                │   │
-         ▼     ▼              ▼                ▼   │
+               │                                    │
+         ┌─────┼──────────────┬────────────────┐    │
+         │     │              │                │    │
+         ▼     ▼              ▼                ▼    │
        USER  ITEM        REFERENCE          CALIBRATION
          │     │         STANDARD               │
          │     │              │                 │
@@ -125,7 +125,7 @@ CALIBRATION ──────────────────────�
                          │ OccurredAt
 
 
-CALIBRATION_METHOD (auto-referência para versionamento)
+CALIBRATION_METHOD (self-reference for versioning)
 │ Id (PK)
 │ ParentMethodId? (FK → CalibrationMethod)
 │ Name, Version, ApplicableItemTypes
@@ -133,7 +133,7 @@ CALIBRATION_METHOD (auto-referência para versionamento)
 │ DisplayTemplate, IsHomologating, Status
 
 
-STANDARD_CERTIFICATE (auto-referência para rastreabilidade)
+STANDARD_CERTIFICATE (self-reference for traceability)
 │ Id (PK)
 │ ReferenceStandardId (FK)
 │ ParentCertificateId? (FK → StandardCertificate)
@@ -141,13 +141,13 @@ STANDARD_CERTIFICATE (auto-referência para rastreabilidade)
 │ DeclaredUncertainty, UncertaintyUnit
 │ ValidFrom, ValidUntil, TraceabilityLevel, IsActive
 │
-│ Cadeia de rastreabilidade:
+│ Traceability chain:
 │  Lab Standard → Accreditation Body → National Lab (BIPM)
 ```
 
 ---
 
-## 3. Fluxo de Autenticação JWT
+## 3. JWT Authentication Flow
 
 ```
 ┌─────────────────────────────────┐
@@ -158,23 +158,23 @@ STANDARD_CERTIFICATE (auto-referência para rastreabilidade)
               ▼
 ┌─────────────────────────────────┐
 │  AuthController                 │
-│  • Valida credenciais           │
-│  • Carrega User + Lab           │
-│  • Chama TokenService           │
+│  • Validates credentials        │
+│  • Loads User + Lab             │
+│  • Calls TokenService           │
 └─────────────┬───────────────────┘
               │
               ▼
 ┌─────────────────────────────────────────────────────┐
 │  TokenService.GenerateToken()                       │
-│  Claims emitidas:                                   │
+│  Claims emitted:                                    │
 │  • sub     = UserId                                 │
 │  • email   = user.Email                             │
 │  • role    = user.Role                              │
-│  • org     = user.OrganizationId                   │
-│  • lab     = user.LabId  ← PENDENTE de implementar │
+│  • org     = user.OrganizationId                    │
+│  • lab     = user.LabId  ← PENDING to implement     │
 │                                                     │
 │  Access Token:  15 min                              │
-│  Refresh Token: 7 dias                              │
+│  Refresh Token: 7 days                              │
 └─────────────┬───────────────────────────────────────┘
               │
               ▼
@@ -186,53 +186,53 @@ STANDARD_CERTIFICATE (auto-referência para rastreabilidade)
 
 ---
 
-## 4. Fluxo de Calibração — Ciclo de Vida
+## 4. Calibration Flow — Life Cycle
 
 ```
-Técnico                 Supervisor              Sistema
+Technician             Supervisor              System
    │                        │                      │
    │── POST /calibrations ──►                      │
-   │   (cria Draft)         │                      │
+   │   (creates Draft)      │                      │
    │                        │                      │
    │── POST /calibrations/{id}/points ─────────────►
-   │   (adiciona pontos)    │                      │
+   │   (adds points)        │                      │
    │                        │                      │
    │── POST /calibrations/{id}/submit ─────────────►
-   │   (muda para Submitted)│                      │
+   │   (changes to Submitted)                      │
    │                        │                      │
-   │                        │◄─── notificação ─────│
+   │                        │◄─── notification ────│
    │                        │                      │
    │                   ┌────┴────┐                 │
-   │                   │ Approve │ Reject           │
+   │                   │ Approve │ Reject          │
    │                   └────┬────┘                 │
    │                        │                      │
    │                        │── POST /approve ──────►
    │                        │   (Approved)         │
    │                        │                      │
    │                        │              ┌───────┴──────┐
-   │                        │              │ Gera          │
-   │                        │              │ Certificate   │
-   │                        │              │ (Official ou  │
-   │                        │              │ InHomologation│
-   │                        │              │ conforme      │
-   │                        │              │ method flag)  │
+   │                        │              │ Generates    │
+   │                        │              │ Certificate  │
+   │                        │              │ (Official or │
+   │                        │              │ InHomologation
+   │                        │              │ based on     │
+   │                        │              │ method flag) │
    │                        │              └───────┬──────┘
    │                        │                      │
    │                        │              ┌───────┴──────┐
-   │                        │              │ BillingEvent  │
-   │                        │              │ (se Official) │
+   │                        │              │ BillingEvent │
+   │                        │              │ (if Official)│
    │                        │              └──────────────┘
 ```
 
 ---
 
-## 5. Modelo de Freemium — Homologação
+## 5. Freemium Model — Homologation
 
 ```
 CalibrationMethod.IsHomologating = true
          │
          ▼
-  Calibration executada
+  Calibration executed
          │
          ▼
   Certificate.Status = InHomologation
@@ -243,45 +243,45 @@ CalibrationMethod.IsHomologating = true
 GET /certificates/{id}/pdf          GET /certificates/{id}/view
     │                                      │
     ▼                                      ▼
-HTTP 403                         Visualizador in-app
-(sem bytes retornados)           com watermark "IN HOMOLOGATION"
-                                 (sem opção de download/print)
+HTTP 403                         In-app viewer
+(no bytes returned)              with "IN HOMOLOGATION" watermark
+                                 (no download/print option)
 
 
 POST /methods/{id}/promote  →  IsHomologating = false
          │
          ▼
-  Re-emissão automática de todos os certificates associados
+  Automatic re-issuance of all associated certificates
          │
          ▼
   Certificate.Status = Official
          │
          ▼
-  BillingEvent criado por certificado
+  BillingEvent created per certificate
 ```
 
 ---
 
-## 6. Cadeia de Rastreabilidade
+## 6. Traceability Chain
 
 ```
-BIPM (nível internacional)
+BIPM (international level)
     ▲
     │ ParentCertificateId
-INMETRO / PTB (laboratório nacional)
+INMETRO / PTB (national laboratory)
     ▲
     │ ParentCertificateId
-RBC Credenciado (laboratório acreditado)
+Accredited Laboratory (RBC)
     ▲
     │ ReferenceStandardId
-REFERENCE_STANDARD (padrão do lab)
+REFERENCE_STANDARD (lab standard)
     │
-    └── StandardCertificate (certificado ativo no momento da calibração)
+    └── StandardCertificate (active certificate at calibration time)
               │
-              └── StandardCertificateId em CALIBRATION
-                  (snapshot imutável — não depende do certificado atual)
+              └── StandardCertificateId in CALIBRATION
+                  (immutable snapshot — does not depend on current certificate)
 ```
 
 ---
 
-**Atualizado:** 2026-05-16
+**Updated:** 2026-05-16

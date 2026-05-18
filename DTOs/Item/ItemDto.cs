@@ -12,12 +12,12 @@ public class ItemDto
     public string Manufacturer { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
     public string SerialNumber { get; set; } = string.Empty;
-    public string Unit { get; set; } = string.Empty;
-    public double? RangeMin { get; set; }
-    public double? RangeMax { get; set; }
+    public ParameterDto? Parameter { get; set; }
     public ItemStatus Status { get; set; }
-    public DateTime? LastCalibration { get; set; }
-    public DateTime? NextCalibrationDue { get; set; }
+    public DateTime? LastAssessment { get; set; }
+    public DateTime? NextAssessmentDue { get; set; }
+    public bool IsReferenceStandard { get; set; }
+    public string? QuantityType { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

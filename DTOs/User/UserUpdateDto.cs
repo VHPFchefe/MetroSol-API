@@ -15,4 +15,5 @@ public class UserUpdateDto
     public UserRole? Role { get; set; }
 
     public Guid? OrganizationId { get; set; }
+    public Guid? LabId { get; set; }
 }

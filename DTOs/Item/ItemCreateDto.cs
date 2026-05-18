@@ -23,11 +23,11 @@ public class ItemCreateDto
     [MaxLength(100)]
     public string SerialNumber { get; set; } = string.Empty;
 
-    [MaxLength(20)]
-    public string Unit { get; set; } = string.Empty;
+    public ParameterDto? Parameter { get; set; }
+    public DateTime? LastAssessment { get; set; }
+    public DateTime? NextAssessmentDue { get; set; }
+    public bool IsReferenceStandard { get; set; } = false;
 
-    public double? RangeMin { get; set; }
-    public double? RangeMax { get; set; }
-    public DateTime? LastCalibration { get; set; }
-    public DateTime? NextCalibrationDue { get; set; }
+    [MaxLength(100)]
+    public string? QuantityType { get; set; }
 }

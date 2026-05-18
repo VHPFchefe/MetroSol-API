@@ -1,249 +1,81 @@
-# 📖 Índice de Documentação - MetroSolAPI
+# Documentation Index — MetroSolAPI
 
-> Central de navegação para toda a documentação  
-> Use este arquivo como seu ponto de partida
-
----
-
-## 🎯 Começando Agora?
-
-### ⚡ Quick Start (5 minutos)
-Novo no projeto? Comece aqui:
-- **[GETTING_STARTED.md](./GETTING_STARTED.md)** - Primeiros passos rápidos
-
-### 📚 Aprendizado Completo (30 minutos)
-Quer dominar tudo?
-1. [ARCHITECTURE.md](./ARCHITECTURE.md) - Visão geral (15 min)
-2. [DIAGRAMS.md](./DIAGRAMS.md) - Visualização (10 min)
-3. [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Padrões (5 min)
+> Navigation hub. **Version:** 1.2 | **Updated:** 2026-05-16
 
 ---
 
-## 📚 Todos os Documentos
+## All Documents
 
-| Documento | Tamanho | Tempo | Uso |
-|-----------|---------|-------|-----|
-| **[GETTING_STARTED.md](./GETTING_STARTED.md)** | Pequeno | 5 min | 🚀 Começo rápido |
-| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Grande | 15 min | 📖 Entender estrutura |
-| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** | Médio | 10 min | ⚡ Desenvolver |
-| **[DIAGRAMS.md](./DIAGRAMS.md)** | Grande | 10 min | 📊 Visualizar |
-| **[IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)** | Médio | 10 min | ✅ Rastrear progresso |
-| **[NAVIGATION.md](./NAVIGATION.md)** | Grande | 5 min | 🗺️ Mapa de navegação |
-| **[SUMMARY.md](./SUMMARY.md)** | Médio | 5 min | 📋 Resumo executivo |
-| **[DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md)** | Médio | 5 min | 📚 Índice detalhado |
-| **[VISUAL_INDEX.md](./VISUAL_INDEX.md)** | Grande | 5 min | 🌳 Árvore hierárquica |
-
-**Total:** 9 documentos, ~130 KB
+| Document | Time | Purpose |
+|---|---|---|
+| [GETTING_STARTED.md](./GETTING_STARTED.md) | 10 min | Environment setup and first run |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | 15 min | Architecture, entities, and code patterns |
+| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | 10 min | Patterns, commands, troubleshooting |
+| [Diagrams.md](./Diagrams.md) | 10 min | ERD, data flows, freemium model |
+| [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) | 10 min | Progress tracking and next tasks |
+| [TESTING.md](./TESTING.md) | 10 min | Unit testing guide |
+| [SUMMARY.md](./SUMMARY.md) | 5 min | Executive summary |
+| [NAVIGATION.md](./NAVIGATION.md) | — | File tree, decision matrix, topic finder |
 
 ---
 
-## 🔍 Procurando por Algo Específico?
+## Document Descriptions
 
-### "Quero entender..."
-- Arquitetura geral? → [ARCHITECTURE.md](./ARCHITECTURE.md)
-- Estrutura de projetos? → [ARCHITECTURE.md](./ARCHITECTURE.md) ou [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
-- Entidades e relacionamentos? → [ARCHITECTURE.md](./ARCHITECTURE.md) + [DIAGRAMS.md](./DIAGRAMS.md)
-- Fluxos de dados? → [DIAGRAMS.md](./DIAGRAMS.md)
-- Status do projeto? → [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
+**GETTING_STARTED.md** — Prerequisites, clone/restore, database config, migration command, available endpoints, next dev steps. Use for first-time setup.
 
-### "Preciso de..."
-- Padrão de código? → [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
-- Comando EF Core? → [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
-- Resolver um erro? → [QUICK_REFERENCE.md](./QUICK_REFERENCE.md#troubleshooting)
-- Visualizar a arquitetura? → [DIAGRAMS.md](./DIAGRAMS.md)
-- Próxima tarefa? → [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
+**ARCHITECTURE.md** — Solution overview, 3-layer structure (Core / Infrastructure / API), complete entity table with FKs, implemented patterns (soft delete, multi-tenancy, repository), tech stack, changelog. Use for onboarding and design decisions.
 
-### "Sou um..."
-- **Desenvolvedor novo:** [GETTING_STARTED.md](./GETTING_STARTED.md) → [ARCHITECTURE.md](./ARCHITECTURE.md) → [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
-- **Desenvolvedor experiente:** [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) (bookmark!)
-- **Arquiteto:** [ARCHITECTURE.md](./ARCHITECTURE.md) → [DIAGRAMS.md](./DIAGRAMS.md) → [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
-- **Project Manager:** [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) → [SUMMARY.md](./SUMMARY.md)
+**QUICK_REFERENCE.md** — File structure tree, enums, FK table, code patterns with examples (new entity, controller, soft delete, UTC dates, patch-style update), CLI commands, troubleshooting for the 5 most common errors. Bookmark this — use daily during development.
+
+**Diagrams.md** — Layered architecture diagram, full ERD, JWT authentication flow, calibration lifecycle, freemium/homologation model, traceability chain. Use to visualize architecture or explain to stakeholders.
+
+**IMPLEMENTATION_CHECKLIST.md** — 6-phase checklist (Domain, Tests, Infrastructure, API, Security, Cleanup) with per-task status, progress summary, and prioritized next actions. Use for sprint planning and progress tracking.
+
+**TESTING.md** — Test project structure, how to run tests, AAA pattern, examples ([Fact] / [Theory] / Mock), common assertions, Moq patterns, troubleshooting. Use when writing or debugging unit tests.
+
+**SUMMARY.md** — Platform description, current progress table, complete ERD summary, next 5 priority actions. Use for executive-level reporting.
 
 ---
 
-## 🗺️ Mapa de Navegação Visual
+## By Profile
 
-```
-Você está aqui: INDEX.md
-	↓
-┌─────────────────────────────────────────────────┐
-│         QUAL É SEU CASO DE USO?                │
-└────────────────────┬────────────────────────────┘
-					 │
-		 ┌───────────┼───────────┐
-		 │           │           │
-	Novo Projeto  Desenvolvendo  Gerenciando
-		 │           │           │
-		 ▼           ▼           ▼
-   GETTING_      QUICK_        IMPLEMENTATION_
-   STARTED.md    REFERENCE.md   CHECKLIST.md
-		 │           │           │
-		 └───────────┼───────────┘
-					 │
-					 ▼
-			  ARCHITECTURE.md
-			  DIAGRAMS.md
-			  (consultar conforme necessário)
-```
+**New developer** → [GETTING_STARTED.md](./GETTING_STARTED.md) → [ARCHITECTURE.md](./ARCHITECTURE.md) → [Diagrams.md](./Diagrams.md) → bookmark [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
+
+**Experienced developer** → [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) (Ctrl+F) → [ARCHITECTURE.md](./ARCHITECTURE.md) for details
+
+**Architect / Tech Lead** → [ARCHITECTURE.md](./ARCHITECTURE.md) → [Diagrams.md](./Diagrams.md) → [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
+
+**Project Manager** → [SUMMARY.md](./SUMMARY.md) → [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
 
 ---
 
-## 📊 Estrutura de Documentação
+## Looking For Something Specific?
 
-```
-📚 Documentação/
-│
-├─ 🚀 ENTRADA RÁPIDA
-│  ├─ INDEX.md (VOCÊ ESTÁ AQUI)
-│  └─ GETTING_STARTED.md (5 min)
-│
-├─ 📖 APRENDIZADO
-│  ├─ ARCHITECTURE.md (15 min) 🔥 COMECE AQUI
-│  ├─ DIAGRAMS.md (10 min)
-│  └─ QUICK_REFERENCE.md (5 min)
-│
-├─ ⚡ DURANTE DESENVOLVIMENTO
-│  ├─ QUICK_REFERENCE.md 🔖 BOOKMARK!
-│  ├─ DIAGRAMS.md
-│  └─ NAVIGATION.md (quando perdido)
-│
-├─ 📋 GERENCIAMENTO
-│  ├─ IMPLEMENTATION_CHECKLIST.md
-│  └─ SUMMARY.md
-│
-└─ 🌳 REFERÊNCIA COMPLETA
-   ├─ DOCUMENTATION_INDEX.md
-   ├─ NAVIGATION.md
-   ├─ VISUAL_INDEX.md
-   └─ INDEX.md (este arquivo)
-```
+| Question | Document |
+|---|---|
+| Architecture overview | [ARCHITECTURE.md](./ARCHITECTURE.md) |
+| Entity definitions | [ARCHITECTURE.md](./ARCHITECTURE.md) + [Diagrams.md](./Diagrams.md) |
+| Code pattern / naming convention | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) |
+| EF Core command | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) |
+| Error / troubleshooting | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) — Troubleshooting |
+| Data flow / diagram | [Diagrams.md](./Diagrams.md) |
+| Soft delete / multi-tenancy | [ARCHITECTURE.md](./ARCHITECTURE.md) or [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) |
+| Project status | [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) |
+| Next task | [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) |
+| Writing unit tests | [TESTING.md](./TESTING.md) |
 
 ---
 
-## ⏱️ Guia de Tempo
+## Reference Matrix
 
-### Se você tem **5 minutos**
-→ Abra [GETTING_STARTED.md](./GETTING_STARTED.md)
-
-### Se você tem **15 minutos**
-→ Abra [ARCHITECTURE.md](./ARCHITECTURE.md)
-
-### Se você tem **30 minutos**
-1. [ARCHITECTURE.md](./ARCHITECTURE.md) (15 min)
-2. [DIAGRAMS.md](./DIAGRAMS.md) (10 min)
-3. [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) (5 min)
-
-### Se você tem **1 hora**
-1. [GETTING_STARTED.md](./GETTING_STARTED.md) (5 min)
-2. [ARCHITECTURE.md](./ARCHITECTURE.md) (15 min)
-3. [DIAGRAMS.md](./DIAGRAMS.md) (10 min)
-4. [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) (10 min)
-5. [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) (10 min)
-6. [NAVIGATION.md](./NAVIGATION.md) (10 min) - para consultas futuras
+| Document | Architecture | Entities | Code | Flows | Progress |
+|---|---|---|---|---|---|
+| ARCHITECTURE.md | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐ |
+| QUICK_REFERENCE.md | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐ |
+| Diagrams.md | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐ | ⭐⭐⭐⭐⭐ | ⭐ |
+| IMPLEMENTATION_CHECKLIST.md | ⭐⭐ | ⭐⭐ | ⭐ | ⭐ | ⭐⭐⭐⭐⭐ |
+| SUMMARY.md | ⭐⭐ | ⭐⭐ | ⭐ | ⭐ | ⭐⭐⭐⭐ |
 
 ---
 
-## 🎯 Fluxo Recomendado por Perfil
-
-### 👨‍💻 Desenvolvedor Novo
-```
-Dia 1 (45 min):
-  1. README.md (5 min)
-  2. GETTING_STARTED.md (5 min)
-  3. ARCHITECTURE.md (15 min)
-  4. DIAGRAMS.md (10 min)
-  5. QUICK_REFERENCE.md (10 min)
-
-Dia 2+:
-  • Use QUICK_REFERENCE.md para dúvidas
-  • Volte a ARCHITECTURE.md para detalhes
-  • Bookmark QUICK_REFERENCE.md
-```
-
-### 🏛️ Arquiteto / Tech Lead
-```
-1. ARCHITECTURE.md (15 min)
-2. DIAGRAMS.md (10 min)
-3. IMPLEMENTATION_CHECKLIST.md (10 min)
-4. Bookmark NAVIGATION.md para futuro
-```
-
-### 📊 Project Manager
-```
-1. SUMMARY.md (5 min)
-2. IMPLEMENTATION_CHECKLIST.md (10 min)
-3. Verificar regularmente para status
-```
-
-### 🏃 Dev Experiente (Migration)
-```
-1. QUICK_REFERENCE.md (Ctrl+F para buscar)
-2. ARCHITECTURE.md (apenas seções relevantes)
-3. Pronto!
-```
-
----
-
-## 🔗 Links Rápidos
-
-| Ação | Link |
-|------|------|
-| Primeiros passos | [GETTING_STARTED.md](./GETTING_STARTED.md) |
-| Entender estrutura | [ARCHITECTURE.md](./ARCHITECTURE.md) |
-| Ver diagramas | [DIAGRAMS.md](./DIAGRAMS.md) |
-| Padrões de código | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) |
-| Resolver erro | [QUICK_REFERENCE.md#troubleshooting](./QUICK_REFERENCE.md) |
-| Comando EF Core | [QUICK_REFERENCE.md#comandos](./QUICK_REFERENCE.md) |
-| Próxima tarefa | [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) |
-| Rastrear progresso | [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) |
-| Onde estou? | [NAVIGATION.md](./NAVIGATION.md) |
-
----
-
-## ✅ Checklist Inicial
-
-- [ ] Li [GETTING_STARTED.md](./GETTING_STARTED.md)
-- [ ] Entendi [ARCHITECTURE.md](./ARCHITECTURE.md)
-- [ ] Estudei [DIAGRAMS.md](./DIAGRAMS.md)
-- [ ] Salvei [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) nos favoritos
-- [ ] Conheço [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md)
-- [ ] Estou pronto para começar! ✅
-
----
-
-## 💡 Dicas de Ouro
-
-1. **Use Ctrl+F** - Busque palavras-chave em cada documento
-2. **Bookmark QUICK_REFERENCE.md** - Você vai usar muito
-3. **Leia progressivamente** - Não tente absorver tudo de uma vez
-4. **Mantenha INDEX.md aberto** - Como referência
-5. **Atualizar conforme muda** - Docs devem refletir o código
-6. **Compartilhe links** - Ao invés de explicar verbalmente
-
----
-
-## 🚀 Próximas Ações
-
-**Agora você sabe onde procurar!**
-
-1. ✅ Você está aqui (INDEX.md)
-2. → Próximo: Abra [GETTING_STARTED.md](./GETTING_STARTED.md) ou [ARCHITECTURE.md](./ARCHITECTURE.md)
-3. → Depois: Use [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) para dúvidas
-4. → Sempre: Consulte [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) para progresso
-
----
-
-## 📞 Perdeu-se?
-
-- Não sabe por onde começar? → Volte para este INDEX.md
-- Precisa de ajuda rápida? → Abra [NAVIGATION.md](./NAVIGATION.md)
-- Tem uma pergunta específica? → Use Ctrl+F neste arquivo
-- Precisa de exemplos? → Consulte [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)
-
----
-
-**Versão:** 1.2  
-**Status:** ⏳ Em andamento (~60%)  
-**Última atualização:** 2026-05-16
-
-> 🎯 **Comece agora:** Escolha um documento acima e abra!
+**Status:** ⏳ In progress (~60%)

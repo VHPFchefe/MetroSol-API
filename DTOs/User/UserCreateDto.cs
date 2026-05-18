@@ -22,4 +22,5 @@ public class UserCreateDto
     public UserRole Role { get; set; }
 
     public Guid? OrganizationId { get; set; }
+    public Guid? LabId { get; set; }
 }

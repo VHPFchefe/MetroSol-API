@@ -1,38 +1,38 @@
 # Getting Started — MetroSolAPI
 
-> Ambiente funcional em ~10 minutos | Atualizado: 2026-05-16
+> Functional environment in ~10 minutes | Updated: 2026-05-16
 
 ---
 
-## Pré-requisitos
+## Prerequisites
 
 - .NET 10 SDK
-- SQL Server (local em 127.0.0.1:1433) ou SQL Server Express
+- SQL Server (local at 127.0.0.1:1433) or SQL Server Express
 - EF Core CLI: `dotnet tool install --global dotnet-ef`
 
 ---
 
-## 1. Clonar e restaurar
+## 1. Clone and restore
 
 ```powershell
-git clone <url-do-repo>
+git clone <repo-url>
 cd MetroSolAPI
 dotnet restore
 ```
 
 ---
 
-## 2. Configurar banco de dados
+## 2. Configure database
 
-Crie `MetroSolAPI/appsettings.local.json` (não commitado):
+Create `MetroSolAPI/appsettings.local.json` (not committed):
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=127.0.0.1,1433;Database=MetroSolDb;User Id=sa;Password=SUA_SENHA;TrustServerCertificate=True"
+    "DefaultConnection": "Server=127.0.0.1,1433;Database=MetroSolDb;User Id=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True"
   },
   "Jwt": {
-    "Key": "sua-chave-secreta-minimo-32-chars",
+    "Key": "your-secret-key-minimum-32-chars",
     "Issuer": "MetroSolAPI",
     "Audience": "MetroSolClients"
   }
@@ -41,15 +41,15 @@ Crie `MetroSolAPI/appsettings.local.json` (não commitado):
 
 ---
 
-## 3. Gerar e aplicar migration
+## 3. Generate and apply migration
 
 ```powershell
-# Gerar migration com o schema completo do ERD
+# Generate migration with complete ERD schema
 dotnet ef migrations add FullERD `
   --project MetroSol.Infrastructure `
   --startup-project MetroSolAPI
 
-# Criar o banco e aplicar
+# Create database and apply
 dotnet ef database update `
   --project MetroSol.Infrastructure `
   --startup-project MetroSolAPI
@@ -57,71 +57,71 @@ dotnet ef database update `
 
 ---
 
-## 4. Rodar testes
+## 4. Run tests
 
 ```powershell
 dotnet test
-# Esperado: 21 testes passando, 0 falhados
+# Expected: 21 tests passing, 0 failed
 ```
 
 ---
 
-## 5. Rodar a API
+## 5. Run the API
 
 ```powershell
 dotnet run --project MetroSolAPI
-# API disponível em https://localhost:5001
-# Docs Scalar: https://localhost:5001/scalar/v1
+# API available at https://localhost:5001
+# Scalar Docs: https://localhost:5001/scalar/v1
 ```
 
 ---
 
-## Estado atual da API
+## Current API state
 
 ```
-MetroSol.Core/           ✅ 100% — 15 entidades, 8 enums, interfaces
-MetroSol.Infrastructure/ ✅ 95%  — DbContext + Repository (migration pendente)
-MetroSolAPI/             ⏳ 35%  — Auth + ItemController prontos
-MetroSol.Tests/          ✅ 100% — 21 testes passando
+MetroSol.Core/           ✅ 100% — 15 entities, 8 enums, interfaces
+MetroSol.Infrastructure/ ✅ 95%  — DbContext + Repository (migration pending)
+MetroSolAPI/             ⏳ 35%  — Auth + ItemController ready
+MetroSol.Tests/          ✅ 100% — 21 tests passing
 ```
 
-### Endpoints disponíveis
+### Available endpoints
 
-| Método | Endpoint | Descrição |
+| Method | Endpoint | Description |
 |---|---|---|
 | POST | /auth/login | Login → JWT pair |
-| POST | /auth/refresh | Renovar access token |
-| POST | /auth/logout | Revogar refresh token |
-| GET | /api/items | Listar itens do lab |
-| POST | /api/items | Criar item |
-| GET | /api/items/{id} | Detalhe de um item |
-| PUT | /api/items/{id} | Atualizar item |
+| POST | /auth/refresh | Renew access token |
+| POST | /auth/logout | Revoke refresh token |
+| GET | /api/items | List lab items |
+| POST | /api/items | Create item |
+| GET | /api/items/{id} | Item details |
+| PUT | /api/items/{id} | Update item |
 | DELETE | /api/items/{id} | Soft delete |
 
-> **Atenção:** o `ItemController` lê o claim `"lab"` do JWT para filtrar itens por lab. O `TokenService` ainda não emite esse claim — necessário antes de testar o CRUD de itens.
+> **Attention:** the `ItemController` reads the `"lab"` claim from JWT to filter items by lab. The `TokenService` does not yet emit this claim — necessary before testing item CRUD.
 
 ---
 
-## Próximos passos para desenvolvimento
+## Next steps for development
 
-1. Adicionar claim `"lab"` ao `TokenService`
-2. Registar novos `IRepository<T>` no `Program.cs`
-3. Criar controllers restantes (Lab, Calibration, Certificate…)
+1. Add `"lab"` claim to `TokenService`
+2. Register new `IRepository<T>` in `Program.cs`
+3. Create remaining controllers (Lab, Calibration, Certificate…)
 
-Veja [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) para lista completa.
+See [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) for complete list.
 
 ---
 
-## Links rápidos
+## Quick links
 
-| Documento | Propósito |
+| Document | Purpose |
 |---|---|
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Visão geral da arquitetura e entidades |
-| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Padrões de código e comandos |
-| [Diagrams.md](./Diagrams.md) | ERD e fluxos de dados |
-| [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) | Status e próximas tarefas |
-| [TESTING.md](./TESTING.md) | Guia de testes |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Architecture overview and entities |
+| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Code patterns and commands |
+| [Diagrams.md](./Diagrams.md) | ERD and data flows |
+| [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) | Status and next tasks |
+| [TESTING.md](./TESTING.md) | Testing guide |
 
 ---
 
-**Atualizado:** 2026-05-16
+**Updated:** 2026-05-16

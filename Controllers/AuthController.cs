@@ -45,7 +45,7 @@ public class AuthController : ControllerBase
         // Ensures email uniqueness
         var existing = await _users.FindAsync(u => u.Email == dto.Email);
         if (existing.Any())
-            return Conflict(new { message = "E-mail já está em uso." });
+            return Conflict(new { message = "E-mail is already in use." });
 
         // Validates organization when provided
         Organization? org = null;
@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
         {
             org = await _orgs.GetByIdAsync(dto.OrganizationId.Value);
             if (org is null)
-                return NotFound(new { message = $"Organization '{dto.OrganizationId}' não encontrada." });
+                return NotFound(new { message = $"Organization '{dto.OrganizationId}' not found." });
         }
 
         var user = new User
@@ -94,7 +94,7 @@ public class AuthController : ControllerBase
             && BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
 
         if (!passwordOk)
-            return Unauthorized(new { message = "Credenciais inválidas." });
+            return Unauthorized(new { message = "Invalid credentials." });
 
         return Ok(BuildResponse(user!));
     }

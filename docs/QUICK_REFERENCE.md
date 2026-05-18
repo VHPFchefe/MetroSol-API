@@ -1,17 +1,18 @@
 # Quick Reference — MetroSolAPI
 
-> Guia rápido de desenvolvimento. Atualizado: 2026-05-16
+> Development quick guide. Updated: 2026-05-16  
+> For architecture details see [ARCHITECTURE.md](./ARCHITECTURE.md). For setup see [GETTING_STARTED.md](./GETTING_STARTED.md).
 
 ---
 
-## Estrutura de Arquivos
+## File Structure
 
 ```
 MetroSolAPI/
 │
 ├── MetroSol.Core/
 │   ├── Entities/
-│   │   ├── BaseEntity.cs               ← base de todas as entidades
+│   │   ├── BaseEntity.cs               ← base for all entities
 │   │   ├── Organization.cs             ✅
 │   │   ├── Lab.cs                      ✅
 │   │   ├── User.cs                     ✅
@@ -26,7 +27,7 @@ MetroSolAPI/
 │   │   ├── Certificate.cs              ✅
 │   │   ├── BillingEvent.cs             ✅
 │   │   ├── AuditLog.cs                 ✅
-│   │   └── CalibrationCertificate.cs   ⚠️  stub legado — remover em breve
+│   │   └── CalibrationCertificate.cs   ⚠️  legacy stub — remove soon
 │   ├── Enums/
 │   │   ├── UserRole.cs                 ✅
 │   │   ├── CertificateStatus.cs        ✅
@@ -42,9 +43,9 @@ MetroSolAPI/
 │
 ├── MetroSol.Infrastructure/
 │   ├── Data/
-│   │   └── MetroSolDbContext.cs        ✅  15 DbSets + relacionamentos
+│   │   └── MetroSolDbContext.cs        ✅  15 DbSets + relationships
 │   └── Repositories/
-│       └── Repository.cs               ✅  genérico com soft-delete
+│       └── Repository.cs               ✅  generic with soft-delete
 │
 ├── MetroSolAPI/
 │   ├── Controllers/
@@ -54,13 +55,13 @@ MetroSolAPI/
 │   │   ├── Auth/                       ✅
 │   │   ├── Organization/               ✅
 │   │   ├── User/                       ✅
-│   │   ├── Item/                       ✅  (atualizado)
-│   │   └── CalibrationCertificate/     ⚠️  legado
+│   │   ├── Item/                       ✅  (updated)
+│   │   └── CalibrationCertificate/     ⚠️  legacy
 │   ├── Services/
-│   │   └── TokenService.cs             ✅  (pendente: claim "lab")
+│   │   └── TokenService.cs             ✅  (pending: "lab" claim)
 │   └── Program.cs                      ✅
 │
-└── MetroSol.Tests/                     ✅  21 testes passando
+└── MetroSol.Tests/                     ✅  21 tests passing
 ```
 
 ---
@@ -95,41 +96,41 @@ OfficialIssuance = 1, SubscriptionCharge = 2, Refund = 3
 
 ---
 
-## FKs Principais
+## Primary FKs
 
-| Entidade | FK(s) | Obrigatório |
+| Entity | FK(s) | Required |
 |---|---|---|
-| `Lab` | OrganizationId | Sim |
-| `User` | OrganizationId, LabId | Não (nullable) |
-| `CustomerLabAccess` | UserId, LabId | Sim |
-| `Item` | LabId, ItemTypeId | Sim |
-| `ReferenceStandard` | LabId | Sim |
-| `StandardCertificate` | ReferenceStandardId, ParentCertificateId? | Parcial |
-| `CalibrationMethod` | ParentMethodId? | Não |
-| `Calibration` | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? | Parcial |
-| `CalibrationPoint` | CalibrationId | Sim |
-| `Certificate` | CalibrationId (1-to-1) | Sim |
-| `BillingEvent` | CertificateId, OrganizationId | Sim |
-| `AuditLog` | UserId, CalibrationId? | Parcial |
+| `Lab` | OrganizationId | Yes |
+| `User` | OrganizationId, LabId | No (nullable) |
+| `CustomerLabAccess` | UserId, LabId | Yes |
+| `Item` | LabId, ItemTypeId | Yes |
+| `ReferenceStandard` | LabId | Yes |
+| `StandardCertificate` | ReferenceStandardId, ParentCertificateId? | Partial |
+| `CalibrationMethod` | ParentMethodId? | No |
+| `Calibration` | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? | Partial |
+| `CalibrationPoint` | CalibrationId | Yes |
+| `Certificate` | CalibrationId (1-to-1) | Yes |
+| `BillingEvent` | CertificateId, OrganizationId | Yes |
+| `AuditLog` | UserId, CalibrationId? | Partial |
 
 ---
 
-## Padrões de Código
+## Code Patterns
 
-### Entidade nova
+### New entity
 ```csharp
 namespace MetroSol.Core.Entities
 {
-    public class MinhaEntidade : BaseEntity
+    public class MyEntity : BaseEntity
     {
         public Guid FkId { get; set; }
-        public OutraEntidade? OutraEntidade { get; set; }
-        public string Campo { get; set; } = string.Empty;  // nunca null
+        public OtherEntity? OtherEntity { get; set; }
+        public string Field { get; set; } = string.Empty;  // never null
     }
 }
 ```
 
-### Controller — padrão multi-tenant por Lab
+### Controller — multi-tenant pattern by Lab
 ```csharp
 private Guid? GetLabId() =>
     User.FindFirstValue("lab") is string s ? Guid.Parse(s) : null;
@@ -138,27 +139,27 @@ private static ObjectResult NoLabResult() =>
     new ObjectResult(new { message = "User is not linked to any lab." })
         { StatusCode = 403 };
 
-// No endpoint:
+// In the endpoint:
 var labId = GetLabId();
 if (labId is null) return NoLabResult();
-var itens = await _repo.FindAsync(x => x.LabId == labId.Value);
+var items = await _repo.FindAsync(x => x.LabId == labId.Value);
 ```
 
-### UpdateDto — patch-style (apenas campos não-null)
+### UpdateDto — patch-style (only non-null fields)
 ```csharp
-if (dto.Campo is not null) entity.Campo = dto.Campo;
+if (dto.Field is not null) entity.Field = dto.Field;
 _repo.Update(entity);
 await _repo.SaveChangesAsync();
 ```
 
 ### Soft delete
 ```csharp
-_repo.Delete(entity);          // seta IsDeleted = true
+_repo.Delete(entity);          // sets IsDeleted = true
 await _repo.SaveChangesAsync();
-// QueryFilter global garante que IsDeleted = true nunca aparece em queries
+// Global QueryFilter ensures IsDeleted = true never appears in queries
 ```
 
-### Datas sempre UTC
+### Dates always UTC
 ```csharp
 public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // ✅
 public DateTime CreatedAt { get; set; } = DateTime.Now;      // ❌
@@ -166,41 +167,41 @@ public DateTime CreatedAt { get; set; } = DateTime.Now;      // ❌
 
 ---
 
-## Comandos
+## Commands
 
 ### Build & Run
 ```powershell
-dotnet build                                              # build solução
-dotnet run --project MetroSolAPI                          # rodar API
+dotnet build                                              # build solution
+dotnet run --project MetroSolAPI                          # run API
 dotnet watch --project MetroSolAPI run                    # hot reload
 ```
 
-### Testes
+### Tests
 ```powershell
-dotnet test                                               # todos os testes
-dotnet test --filter "ClassName=ItemEntityTests"          # filtrar classe
-dotnet test --verbosity detailed                          # saída detalhada
+dotnet test                                               # all tests
+dotnet test --filter "ClassName=ItemEntityTests"          # filter by class
+dotnet test --verbosity detailed                          # detailed output
 dotnet watch --project MetroSol.Tests test               # watch mode
 ```
 
 ### Entity Framework Core
 ```powershell
-# Criar migration
+# Create migration
 dotnet ef migrations add FullERD `
   --project MetroSol.Infrastructure `
   --startup-project MetroSolAPI
 
-# Aplicar migration
+# Apply migration
 dotnet ef database update `
   --project MetroSol.Infrastructure `
   --startup-project MetroSolAPI
 
-# Remover última migration (se não aplicada)
+# Remove last migration (if not applied)
 dotnet ef migrations remove `
   --project MetroSol.Infrastructure `
   --startup-project MetroSolAPI
 
-# Listar migrations aplicadas
+# List applied migrations
 dotnet ef migrations list `
   --project MetroSol.Infrastructure `
   --startup-project MetroSolAPI
@@ -212,43 +213,43 @@ dotnet ef migrations list `
 
 ### "DbContext not registered"
 ```csharp
-// Program.cs — verificar se existe:
+// Program.cs — verify it exists:
 builder.Services.AddDbContext<MetroSolDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 ```
 
 ### "Repository not registered"
 ```csharp
-// Program.cs — registar para cada nova entidade:
+// Program.cs — register for each new entity:
 builder.Services.AddScoped<IRepository<Lab>, Repository<Lab>>();
 builder.Services.AddScoped<IRepository<Calibration>, Repository<Calibration>>();
 // ...
 ```
 
-### "Claim 'lab' não encontrado — ItemController retorna 403"
+### "Claim 'lab' not found — ItemController returns 403"
 ```
-TokenService ainda não emite o claim "lab".
-Adicionar LabId ao payload JWT no AuthController/TokenService.
-```
-
-### "Soft delete não funciona"
-```
-QueryFilter está configurado no DbContext para todas as entidades BaseEntity.
-Se uma query bypassa o DbContext (SQL raw), o filtro não se aplica.
+TokenService does not yet emit the "lab" claim.
+Add LabId to the JWT payload in AuthController/TokenService.
 ```
 
-### "Migration falhou — referência circular"
+### "Soft delete not working"
 ```
-Configurar OnDelete(Restrict) em todas as auto-referências (ParentMethodId, ParentCertificateId).
-Já configurado no DbContext atual.
+QueryFilter is configured in DbContext for all BaseEntity entities.
+If a query bypasses the DbContext (raw SQL), the filter does not apply.
+```
+
+### "Migration failed — circular reference"
+```
+Configure OnDelete(Restrict) on all self-references (ParentMethodId, ParentCertificateId).
+Already configured in the current DbContext.
 ```
 
 ---
 
-## Conexão ao Banco
+## Database Connection
 
 ```json
-// appsettings.local.json (não commitado)
+// appsettings.local.json (not committed)
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=127.0.0.1,1433;Database=MetroSolDb;User Id=sa;Password=...;TrustServerCertificate=True"
@@ -258,4 +259,4 @@ Já configurado no DbContext atual.
 
 ---
 
-**Atualizado:** 2026-05-16
+**Updated:** 2026-05-16
