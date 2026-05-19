@@ -1,6 +1,6 @@
 # Quick Reference — MetroSolAPI
 
-> Development quick guide. Updated: 2026-05-16  
+> Development quick guide. Updated: 2026-05-19  
 > For architecture details see [ARCHITECTURE.md](./ARCHITECTURE.md). For setup see [GETTING_STARTED.md](./GETTING_STARTED.md).
 
 ---
@@ -12,54 +12,76 @@ MetroSolAPI/
 │
 ├── MetroSol.Core/
 │   ├── Entities/
-│   │   ├── BaseEntity.cs               ← base for all entities
+│   │   ├── BaseEntity.cs               ← base: Id, CreatedAt, UpdatedAt, IsDeleted
 │   │   ├── Organization.cs             ✅
 │   │   ├── Lab.cs                      ✅
 │   │   ├── User.cs                     ✅
 │   │   ├── CustomerLabAccess.cs        ✅
 │   │   ├── ItemType.cs                 ✅
-│   │   ├── Item.cs                     ✅
-│   │   ├── ReferenceStandard.cs        ✅
-│   │   ├── StandardCertificate.cs      ✅
-│   │   ├── CalibrationMethod.cs        ✅
-│   │   ├── Calibration.cs              ✅
-│   │   ├── CalibrationPoint.cs         ✅
-│   │   ├── Certificate.cs              ✅
+│   │   ├── Item.cs                     ✅  (IsReferenceStandard flag + Parameters owned)
+│   │   ├── Parameter.cs                ✅  (owned by Item — Name, Unit, Limits, CustomFields)
+│   │   ├── StandardCertificate.cs      ✅  (self-ref traceability)
+│   │   ├── AssessmentMethod.cs         ✅  (self-ref versioning)
+│   │   ├── Assessment.cs               ✅  (owned: Customer, Requestor, Environment, WorkOrder)
+│   │   ├── AssessmentPoint.cs          ✅
+│   │   ├── AssessmentCertificate.cs    ✅
+│   │   ├── Certificate.cs              ✅  (1-to-1 com Assessment)
 │   │   ├── BillingEvent.cs             ✅
-│   │   ├── AuditLog.cs                 ✅
-│   │   └── CalibrationCertificate.cs   ⚠️  legacy stub — remove soon
+│   │   └── AuditLog.cs                 ✅
 │   ├── Enums/
 │   │   ├── UserRole.cs                 ✅
 │   │   ├── CertificateStatus.cs        ✅
 │   │   ├── ItemStatus.cs               ✅
-│   │   ├── CalibrationStatus.cs        ✅
-│   │   ├── CalibrationMethodStatus.cs  ✅
+│   │   ├── AssessmentStatus.cs         ✅
+│   │   ├── AssessmentMethodStatus.cs   ✅
 │   │   ├── ConformityResult.cs         ✅
 │   │   ├── InputSource.cs              ✅
 │   │   └── BillingEventType.cs         ✅
 │   └── Interfaces/
-│       ├── IRepository.cs              ✅
-│       └── ICertificateRepository.cs   ✅
+│       └── IRepository.cs              ✅
 │
 ├── MetroSol.Infrastructure/
 │   ├── Data/
-│   │   └── MetroSolDbContext.cs        ✅  15 DbSets + relationships
+│   │   └── MetroSolDbContext.cs        ✅  14 DbSets + relationships
 │   └── Repositories/
-│       └── Repository.cs               ✅  generic with soft-delete
+│       └── Repository.cs               ✅  generic, soft-delete via QueryFilter
 │
 ├── MetroSolAPI/
-│   ├── Controllers/
-│   │   ├── AuthController.cs           ✅
-│   │   └── ItemController.cs           ✅
-│   ├── DTOs/
-│   │   ├── Auth/                       ✅
-│   │   ├── Organization/               ✅
-│   │   ├── User/                       ✅
-│   │   ├── Item/                       ✅  (updated)
-│   │   └── CalibrationCertificate/     ⚠️  legacy
+│   ├── Controllers/                    ✅  14 controllers completos
+│   │   ├── AuthController.cs
+│   │   ├── OrganizationController.cs
+│   │   ├── LabController.cs
+│   │   ├── UserController.cs
+│   │   ├── ItemTypeController.cs
+│   │   ├── ItemController.cs           (bug Parameters corrigido 2026-05-19)
+│   │   ├── AssessmentMethodController.cs
+│   │   ├── AssessmentController.cs
+│   │   ├── AssessmentPointController.cs
+│   │   ├── StandardCertificateController.cs
+│   │   ├── CertificateController.cs
+│   │   ├── AssessmentCertificateController.cs
+│   │   ├── AuditLogController.cs
+│   │   ├── BillingEventController.cs
+│   │   └── CustomerLabAccessController.cs
+│   ├── DTOs/                           ✅  todos completos
+│   │   ├── Auth/
+│   │   ├── Organization/
+│   │   ├── Lab/
+│   │   ├── User/
+│   │   ├── ItemType/
+│   │   ├── Item/
+│   │   ├── AssessmentMethod/
+│   │   ├── Assessment/
+│   │   ├── AssessmentPoint/
+│   │   ├── StandardCertificate/
+│   │   ├── Certificate/
+│   │   ├── AssessmentCertificate/
+│   │   ├── AuditLog/
+│   │   ├── BillingEvent/
+│   │   └── CustomerLabAccess/
 │   ├── Services/
-│   │   └── TokenService.cs             ✅  (pending: "lab" claim)
-│   └── Program.cs                      ✅
+│   │   └── TokenService.cs             ✅  claims: sub, email, name, jti, role, org, lab
+│   └── Program.cs                      ✅  open-generic IRepository<T> registrado
 │
 └── MetroSol.Tests/                     ✅  21 tests passing
 ```
@@ -76,12 +98,12 @@ Admin = 1, Manager = 2, Technician = 3, Customer = 4
 Draft = 1, PendingReview = 2, Official = 3, Voided = 4, InHomologation = 5, Revoked = 6
 
 // ItemStatus
-Active = 1, UnderCalibration = 2, OutOfService = 3, Retired = 4
+Active = 1, UnderAssessment = 2, OutOfService = 3, Retired = 4
 
-// CalibrationStatus
+// AssessmentStatus
 Draft = 1, Submitted = 2, Approved = 3, Rejected = 4
 
-// CalibrationMethodStatus
+// AssessmentMethodStatus
 Homologating = 1, Official = 2, Deprecated = 3
 
 // ConformityResult
@@ -104,14 +126,14 @@ OfficialIssuance = 1, SubscriptionCharge = 2, Refund = 3
 | `User` | OrganizationId, LabId | No (nullable) |
 | `CustomerLabAccess` | UserId, LabId | Yes |
 | `Item` | LabId, ItemTypeId | Yes |
-| `ReferenceStandard` | LabId | Yes |
-| `StandardCertificate` | ReferenceStandardId, ParentCertificateId? | Partial |
-| `CalibrationMethod` | ParentMethodId? | No |
-| `Calibration` | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? | Partial |
-| `CalibrationPoint` | CalibrationId | Yes |
-| `Certificate` | CalibrationId (1-to-1) | Yes |
+| `StandardCertificate` | ReferenceStandardId (→ Item), ParentCertificateId? (self-ref) | Partial |
+| `AssessmentMethod` | ParentMethodId? (self-ref) | No |
+| `Assessment` | LabId, ItemId, ReferenceStandardId, StandardCertificateId, MethodId, TechnicianId, SupervisorId? | Partial |
+| `AssessmentPoint` | AssessmentId | Yes |
+| `AssessmentCertificate` | ItemId, PerformedById, SignedById | Yes |
+| `Certificate` | AssessmentId (1-to-1) | Yes |
 | `BillingEvent` | CertificateId, OrganizationId | Yes |
-| `AuditLog` | UserId, CalibrationId? | Partial |
+| `AuditLog` | UserId, AssessmentId? | Partial |
 
 ---
 
@@ -220,16 +242,16 @@ builder.Services.AddDbContext<MetroSolDbContext>(options =>
 
 ### "Repository not registered"
 ```csharp
-// Program.cs — register for each new entity:
-builder.Services.AddScoped<IRepository<Lab>, Repository<Lab>>();
-builder.Services.AddScoped<IRepository<Calibration>, Repository<Calibration>>();
-// ...
+// Program.cs já usa open-generic — nenhum registro individual necessário:
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+// Todos os IRepository<T> resolvem automaticamente.
 ```
 
-### "Claim 'lab' not found — ItemController returns 403"
+### "Controller retorna 403 — claim 'lab' não encontrado"
 ```
-TokenService does not yet emit the "lab" claim.
-Add LabId to the JWT payload in AuthController/TokenService.
+Verifique se o usuário tem LabId preenchido no banco.
+O TokenService emite o claim "lab" somente se User.LabId não for null.
+Roles sem lab (Admin, Manager de org) usam o claim "org" em vez de "lab".
 ```
 
 ### "Soft delete not working"
@@ -259,4 +281,4 @@ Already configured in the current DbContext.
 
 ---
 
-**Updated:** 2026-05-16
+**Updated:** 2026-05-19

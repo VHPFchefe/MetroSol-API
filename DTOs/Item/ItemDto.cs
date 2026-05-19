@@ -12,7 +12,7 @@ public class ItemDto
     public string Manufacturer { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
     public string SerialNumber { get; set; } = string.Empty;
-    public ParameterDto? Parameter { get; set; }
+    public List<ParameterDto> Parameters { get; set; } = new List<ParameterDto>();
     public ItemStatus Status { get; set; }
     public DateTime? LastAssessment { get; set; }
     public DateTime? NextAssessmentDue { get; set; }

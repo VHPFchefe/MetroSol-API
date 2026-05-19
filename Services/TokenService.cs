@@ -2,6 +2,7 @@ using MetroSol.Core.Entities;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace MetroSol.API.Services;
@@ -51,4 +52,16 @@ public class TokenService : ITokenService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    /// <inheritdoc/>
+    public string GenerateRefreshToken()
+    {
+        var bytes = new byte[64];
+        RandomNumberGenerator.Fill(bytes);
+        return Convert.ToBase64String(bytes);
+    }
+
+    /// <inheritdoc/>
+    public int RefreshTokenExpirationDays =>
+        int.Parse(_config["Jwt:RefreshTokenExpirationDays"] ?? "7");
 }

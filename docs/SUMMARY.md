@@ -1,6 +1,6 @@
 # Executive Summary — MetroSolAPI
 
-> **Updated:** 2026-05-16 | **Version:** 1.2 | **Stack:** .NET 10 · EF Core · SQL Server
+> **Updated:** 2026-05-19 | **Version:** 1.3 | **Stack:** .NET 10 · EF Core · SQL Server
 
 ---
 
@@ -16,44 +16,44 @@ Multi-tenant metrology calibration management platform. Covers the complete cali
 
 | Component | Status | % |
 |---|---|---|
-| Domain — Entities (15) | ✅ Complete | 100% |
+| Domain — Entities (14) | ✅ Complete | 100% |
 | Domain — Enums (8) | ✅ Complete | 100% |
 | Domain — Interfaces | ✅ Complete | 100% |
 | Infrastructure — DbContext | ✅ Complete | 100% |
-| Infrastructure — Repository\<T\> | ✅ Complete | 100% |
+| Infrastructure — Repository\<T\> (generic DI) | ✅ Complete | 100% |
 | Infrastructure — Migration | ⬜ Pending | 0% |
 | API — Auth | ✅ Complete | 100% |
-| API — ItemController | ✅ Complete | 100% |
-| API — Other Controllers | ⬜ Pending | 0% |
-| API — Base DTOs | ✅ Complete | 100% |
-| API — Remaining DTOs | ⬜ Pending | 0% |
+| API — All Controllers (14) | ✅ Complete | 100% |
+| API — All DTOs | ✅ Complete | 100% |
 | Unit Tests | ✅ Complete | 100% |
-| **TOTAL** | **⏳ In progress** | **~60%** |
+| **TOTAL** | **⏳ In progress** | **~95%** |
 
 ---
 
 ## Implemented Entities (complete ERD)
 
 ```
-Organization → Lab → User, Item, ReferenceStandard, Calibration
+Organization → Lab → User, Item, Assessment
 ItemType → Item
-StandardCertificate (self-ref) → traceability chain
-CalibrationMethod (self-ref) → method versioning
-Calibration → CalibrationPoint, Certificate, AuditLog
+Item (IsReferenceStandard=true) → StandardCertificate (self-ref, traceability chain)
+AssessmentMethod (self-ref, method versioning)
+Assessment → AssessmentPoint, Certificate, AuditLog
 Certificate → BillingEvent
+AssessmentCertificate → Item
+CustomerLabAccess → User + Lab
 ```
 
-**14 functional entities** + 1 legacy stub (`CalibrationCertificate` — to be removed).
+**14 functional entities**, todos com controller e DTOs completos.
 
 ---
 
-## Next 5 Priority Actions
+## Next Priority Actions
 
-1. `dotnet ef migrations add FullERD` — apply new schema to the database
-2. Add `"lab"` claim to `TokenService` (required for ItemController)
-3. Register new `IRepository<T>` in `Program.cs`
-4. Create `LabController` + `CalibrationController` + `CertificateController`
-5. Remove legacy entity `CalibrationCertificate`
+1. `dotnet ef migrations add FullERD` — gerar a migration EF Core para o schema atual
+2. `dotnet ef database update` — aplicar schema ao banco
+3. `dotnet build` — verificar zero erros de compilação
+4. Implementar revogação de refresh token no logout
+5. Avaliar FluentValidation para validações mais ricas nos DTOs
 
 ---
 
@@ -70,4 +70,4 @@ Certificate → BillingEvent
 
 ---
 
-**Updated:** 2026-05-16
+**Updated:** 2026-05-19

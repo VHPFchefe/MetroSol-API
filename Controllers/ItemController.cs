@@ -3,7 +3,6 @@ using MetroSol.Core.Entities;
 using MetroSol.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace MetroSol.API.Controllers;
@@ -30,9 +29,6 @@ public class ItemController : ControllerBase
         var labClaim = User.FindFirstValue("lab");
         return string.IsNullOrEmpty(labClaim) ? null : Guid.Parse(labClaim);
     }
-
-    private Guid GetUserId() =>
-        Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
 
     private static ObjectResult NoLabResult() =>
         new ObjectResult(new { message = "User is not linked to any lab." })
@@ -101,18 +97,21 @@ public class ItemController : ControllerBase
             Manufacturer      = dto.Manufacturer,
             Model             = dto.Model,
             SerialNumber      = dto.SerialNumber,
-            Parameter         = dto.Parameter is null ? null : new MetroSol.Core.Entities.Parameter
-            {
-                Unit         = dto.Parameter.Unit,
-                LowerLimit   = dto.Parameter.LowerLimit,
-                UpperLimit   = dto.Parameter.UpperLimit,
-                Resolution   = dto.Parameter.Resolution,
-                CustomFields = dto.Parameter.CustomFields
-            },
+            Parameters        = dto.Parameters?
+                .Where(p => p is not null)
+                .Select(p => new MetroSol.Core.Entities.Parameter
+                {
+                    Name         = p!.Name,
+                    Unit         = p.Unit,
+                    LowerLimit   = p.LowerLimit,
+                    UpperLimit   = p.UpperLimit,
+                    Resolution   = p.Resolution,
+                    CustomFields = p.CustomFields
+                })
+                .ToList(),
             LastAssessment    = dto.LastAssessment,
             NextAssessmentDue    = dto.NextAssessmentDue,
-            IsReferenceStandard  = dto.IsReferenceStandard,
-            QuantityType         = dto.QuantityType
+            IsReferenceStandard  = dto.IsReferenceStandard
         };
 
         await _items.AddAsync(item);
@@ -146,19 +145,23 @@ public class ItemController : ControllerBase
         if (dto.Manufacturer      is not null) item.Manufacturer      = dto.Manufacturer;
         if (dto.Model             is not null) item.Model             = dto.Model;
         if (dto.SerialNumber      is not null) item.SerialNumber      = dto.SerialNumber;
-        if (dto.Parameter         is not null) item.Parameter         = new MetroSol.Core.Entities.Parameter
-        {
-            Unit         = dto.Parameter.Unit,
-            LowerLimit   = dto.Parameter.LowerLimit,
-            UpperLimit   = dto.Parameter.UpperLimit,
-            Resolution   = dto.Parameter.Resolution,
-            CustomFields = dto.Parameter.CustomFields
-        };
+        if (dto.Parameters?.Count > 0)
+            item.Parameters = dto.Parameters
+                .Where(p => p is not null)
+                .Select(p => new MetroSol.Core.Entities.Parameter
+                {
+                    Name         = p!.Name,
+                    Unit         = p.Unit,
+                    LowerLimit   = p.LowerLimit,
+                    UpperLimit   = p.UpperLimit,
+                    Resolution   = p.Resolution,
+                    CustomFields = p.CustomFields
+                })
+                .ToList();
         if (dto.Status              is not null) item.Status              = dto.Status.Value;
         if (dto.LastAssessment      is not null) item.LastAssessment      = dto.LastAssessment;
         if (dto.NextAssessmentDue   is not null) item.NextAssessmentDue   = dto.NextAssessmentDue;
         if (dto.IsReferenceStandard is not null) item.IsReferenceStandard = dto.IsReferenceStandard.Value;
-        if (dto.QuantityType        is not null) item.QuantityType        = dto.QuantityType;
 
         _items.Update(item);
         await _items.SaveChangesAsync();
@@ -193,30 +196,36 @@ public class ItemController : ControllerBase
     }
 
     // ── Mapping ───────────────────────────────────────────────────────────────
-    private static ItemDto MapToDto(Item item) => new()
+    private static ItemDto MapToDto(Item item)
     {
-        Id                 = item.Id,
-        LabId              = item.LabId,
-        ItemTypeId         = item.ItemTypeId,
-        Tag                = item.Tag,
-        Description        = item.Description,
-        Manufacturer       = item.Manufacturer,
-        Model              = item.Model,
-        SerialNumber       = item.SerialNumber,
-        Parameter          = item.Parameter is null ? null : new ParameterDto
+        return new()
         {
-            Unit         = item.Parameter.Unit,
-            LowerLimit   = item.Parameter.LowerLimit,
-            UpperLimit   = item.Parameter.UpperLimit,
-            Resolution   = item.Parameter.Resolution,
-            CustomFields = item.Parameter.CustomFields
-        },
-        Status               = item.Status,
-        LastAssessment       = item.LastAssessment,
-        NextAssessmentDue    = item.NextAssessmentDue,
-        IsReferenceStandard  = item.IsReferenceStandard,
-        QuantityType         = item.QuantityType,
-        CreatedAt            = item.CreatedAt,
-        UpdatedAt            = item.UpdatedAt
-    };
+            Id = item.Id,
+            LabId = item.LabId,
+            ItemTypeId = item.ItemTypeId,
+            Tag = item.Tag,
+            Description = item.Description,
+            Manufacturer = item.Manufacturer,
+            Model = item.Model,
+            SerialNumber = item.SerialNumber,
+            Parameters = item.Parameters?
+                .Where(p => p is not null)
+                .Select(p => new ParameterDto
+                {
+                    Name         = p.Name,
+                    Unit         = p.Unit,
+                    LowerLimit   = p.LowerLimit,
+                    UpperLimit   = p.UpperLimit,
+                    Resolution   = p.Resolution,
+                    CustomFields = p.CustomFields
+                })
+                .ToList() ?? [],
+            Status              = item.Status,
+            LastAssessment      = item.LastAssessment,
+            NextAssessmentDue   = item.NextAssessmentDue,
+            IsReferenceStandard = item.IsReferenceStandard,
+            CreatedAt           = item.CreatedAt,
+            UpdatedAt           = item.UpdatedAt,
+        };
+    }
 }

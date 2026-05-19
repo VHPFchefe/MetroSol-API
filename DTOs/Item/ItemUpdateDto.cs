@@ -20,7 +20,7 @@ public class ItemUpdateDto
     [MaxLength(100)]
     public string? SerialNumber { get; set; }
 
-    public ParameterDto? Parameter { get; set; }
+    public List<ParameterDto?> Parameters { get; set; } = new List<ParameterDto?>();
     public ItemStatus? Status { get; set; }
     public DateTime? LastAssessment { get; set; }
     public DateTime? NextAssessmentDue { get; set; }

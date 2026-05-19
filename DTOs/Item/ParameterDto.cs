@@ -6,6 +6,10 @@ public class ParameterDto
 {
     [Required]
     [MaxLength(50)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(50)]
     public string Unit { get; set; } = string.Empty;
 
     [Required]

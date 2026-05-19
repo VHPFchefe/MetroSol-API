@@ -23,7 +23,7 @@ public class ItemCreateDto
     [MaxLength(100)]
     public string SerialNumber { get; set; } = string.Empty;
 
-    public ParameterDto? Parameter { get; set; }
+    public List<ParameterDto?> Parameters { get; set; } = new List<ParameterDto?>();
     public DateTime? LastAssessment { get; set; }
     public DateTime? NextAssessmentDue { get; set; }
     public bool IsReferenceStandard { get; set; } = false;

@@ -29,9 +29,9 @@ Multi-tenant metrology platform covering the full calibration lifecycle: instrum
 | Component | Status | % |
 |---|---|---|
 | Core (Domain) | ✅ Complete | 100% |
-| Infrastructure | ✅ Nearly complete | 95% |
-| API — Auth + ItemController | ✅ Complete | 100% |
-| API — Remaining controllers | ⏳ In progress | 25% |
+| Infrastructure | ⏳ Migration pending | 95% |
+| API — All Controllers (14) | ✅ Complete | 100% |
+| API — DTOs | ✅ Complete | 100% |
 | Unit Tests | ✅ Complete | 100% |
 
 ---
